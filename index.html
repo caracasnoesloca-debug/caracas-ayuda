@@ -3,116 +3,54 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- SEO primario -->
   <title>Caracas Ayuda — Mapa de ayuda tras el terremoto en Venezuela | Caracas Merch</title>
   <meta name="description" content="Mapa interactivo con centros de agua, comida, refugios, hospitales y puntos de ayuda disponibles tras el terremoto en Venezuela del 24 de junio de 2026. Una iniciativa sin fines de lucro creada por Caracas Merch para conectar a las personas con la ayuda disponible." />
   <meta name="keywords" content="terremoto Venezuela, ayuda terremoto Venezuela, mapa ayuda Venezuela, refugios Venezuela, agua potable Caracas, puntos de ayuda Venezuela 2026, Caracas Merch, caracasayuda" />
   <meta name="author" content="Caracas Merch" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://caracasayuda.com" />
-
-  <!-- Open Graph (WhatsApp, Facebook, Instagram) -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Caracas Ayuda" />
   <meta property="og:title" content="Caracas Ayuda — Mapa de recursos tras el terremoto en Venezuela" />
   <meta property="og:description" content="Encuentra centros de agua, comida, refugios y atención médica disponibles tras el terremoto. Iniciativa sin fines de lucro de Caracas Merch." />
   <meta property="og:url" content="https://caracasayuda.com" />
   <meta property="og:locale" content="es_VE" />
-
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Caracas Ayuda — Mapa de recursos tras el terremoto en Venezuela" />
   <meta name="twitter:description" content="Encuentra centros de agua, comida, refugios y atención médica disponibles tras el terremoto. Iniciativa sin fines de lucro de Caracas Merch." />
   <meta name="twitter:site" content="@caracasmerch" />
-
-  <!-- Schema.org structured data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "Caracas Ayuda",
-    "url": "https://caracasayuda.com",
-    "description": "Mapa interactivo con puntos de ayuda humanitaria tras el terremoto en Venezuela del 24 de junio de 2026. Incluye centros de agua, comida, refugios, hospitales y medicamentos.",
-    "applicationCategory": "EmergencyApplication",
-    "operatingSystem": "All",
-    "inLanguage": "es",
-    "author": {
-      "@type": "Organization",
-      "name": "Caracas Merch",
-      "url": "https://caracasmerch.com"
-    },
-    "about": {
-      "@type": "Event",
-      "name": "Terremoto en Venezuela 2026",
-      "startDate": "2026-06-24",
-      "location": {
-        "@type": "Place",
-        "name": "Venezuela",
-        "address": {
-          "@type": "PostalAddress",
-          "addressCountry": "VE"
-        }
-      }
-    },
-    "isAccessibleForFree": true,
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    }
-  }
-  </script>
-
-  <!-- Performance: preconnect a dominios externos -->
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Caracas Ayuda","url":"https://caracasayuda.com","description":"Mapa interactivo con puntos de ayuda humanitaria tras el terremoto en Venezuela del 24 de junio de 2026.","applicationCategory":"EmergencyApplication","operatingSystem":"All","inLanguage":"es","author":{"@type":"Organization","name":"Caracas Merch","url":"https://caracasmerch.com"},"isAccessibleForFree":true}</script>
   <link rel="preconnect" href="https://unpkg.com" />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" />
   <link rel="preconnect" href="https://zxpfumbsxgnfzxjlhocu.supabase.co" />
   <link rel="preconnect" href="https://tile.openstreetmap.org" />
   <link rel="dns-prefetch" href="https://nominatim.openstreetmap.org" />
-
-  <!-- Leaflet CSS — crítico, carga primero -->
   <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" /></noscript>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --blue: #2563EB; --blue-dark: #1d4ed8; --blue-light: #eff6ff;
-      --green: #16a34a; --amber: #ca8a04; --gray: #9ca3af;
+      --blue: #2563EB; --blue-dark: #1d4ed8;
+      --green: #16a34a; --amber: #ca8a04;
       --text: #111827; --text-muted: #6b7280;
       --border: rgba(0,0,0,0.08);
-      --bg: #ffffff;
-      --bg-secondary: #f9fafb;
+      --bg: #ffffff; --bg-secondary: #f9fafb;
       --radius: 10px; --radius-lg: 14px; --radius-xl: 20px;
-
-      /* Glass — siempre light */
       --glass-bg: rgba(255,255,255,0.4);
       --glass-blur: blur(22px);
       --glass-border: rgba(255,255,255,0.3);
-      --glass-shadow:
-        0 8px 32px rgba(0,0,0,0.1),
-        inset 0 1px 0 rgba(255,255,255,0.5),
-        inset 0 -1px 0 rgba(255,255,255,0.1),
-        inset 0 0 60px 30px rgba(255,255,255,0.3);
+      --glass-shadow: 0 8px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(255,255,255,0.1), inset 0 0 60px 30px rgba(255,255,255,0.3);
     }
-
     html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); }
     #app { display: flex; flex-direction: column; height: 100vh; }
-
-    /* TOPBAR */
     #topbar { padding: 13px 16px 0; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-bottom: 1px solid var(--glass-border); box-shadow: 0 4px 24px rgba(0,0,0,0.06); z-index: 1000; flex-shrink: 0; }
     #topbar-row1 { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
     #logo-block { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     #logo-block svg { height: 26px; width: auto; fill: var(--text); }
-    #slogan { display: none; }
-
-    /* BANNER */
     #banner { padding: 8px 16px; background: rgba(37,99,235,0.08); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-bottom: 1px solid rgba(37,99,235,0.15); display: flex; align-items: flex-start; gap: 8px; flex-shrink: 0; }
     #banner-text { font-size: 13px; color: #1e40af; line-height: 1.5; flex: 1; }
     #banner-text strong { font-weight: 600; }
     #banner-close { background: none; border: none; font-size: 22px; color: #93c5fd; cursor: pointer; flex-shrink: 0; line-height: 1; padding: 0; }
-
-    /* SEARCH */
     #search-wrap { flex: 1; position: relative; }
     #search-input { width: 100%; padding: 8px 36px 8px 12px; font-size: 16px; border: 1px solid rgba(0,0,0,0.12); border-radius: var(--radius); background: rgba(255,255,255,0.8); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); color: var(--text); outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
     #search-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
@@ -124,11 +62,8 @@
     .search-item-icon { font-size: 16px; flex-shrink: 0; }
     .search-item-name { font-weight: 500; font-size: 13px; }
     .search-item-addr { font-size: 11px; color: var(--text-muted); }
-
     #btn-add { padding: 8px 18px; font-size: 14px; font-weight: 600; background: var(--blue); color: #fff; border: none; border-radius: var(--radius-xl); cursor: pointer; white-space: nowrap; box-shadow: 0 2px 12px rgba(37,99,235,0.35); transition: transform 0.1s, box-shadow 0.1s; }
-    #btn-add:hover { background: var(--blue-dark); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(37,99,235,0.45); }
-
-    /* FILTERS */
+    #btn-add:hover { background: var(--blue-dark); transform: translateY(-1px); }
     #filters { display: flex; gap: 5px; padding-bottom: 10px; overflow-x: auto; scrollbar-width: none; }
     #filters::-webkit-scrollbar { display: none; }
     .filter-btn { padding: 7px 12px; font-size: 14px; border: 1px solid rgba(0,0,0,0.12); border-radius: 20px; background: rgba(255,255,255,0.7); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.15s; font-family: inherit; }
@@ -136,35 +71,23 @@
     .filter-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
     .filter-tipo.active[data-tipo="ayuda"]     { background: #2563EB; color: #fff; border-color: #2563EB; }
     .filter-tipo.active[data-tipo="necesidad"] { background: #dc2626; color: #fff; border-color: #dc2626; }
-
-    /* MAP */
     #map-container { flex: 1; position: relative; min-height: 0; }
     #map { width: 100%; height: 100%; }
     #map.picking { cursor: crosshair !important; }
     .leaflet-top.leaflet-left { top: auto; bottom: 40px; }
     .leaflet-control-zoom { border: none !important; border-radius: var(--radius) !important; overflow: hidden; box-shadow: var(--glass-shadow) !important; }
     .leaflet-control-zoom a { background: var(--glass-bg) !important; backdrop-filter: var(--glass-blur) !important; -webkit-backdrop-filter: var(--glass-blur) !important; border: none !important; color: var(--text) !important; font-weight: 600 !important; }
-
-    /* PICK MODE */
     #pick-overlay { position: absolute; inset: 0; z-index: 1500; pointer-events: none; display: none; }
     #pick-overlay.active { display: block; pointer-events: none; }
     #pick-banner { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); background: rgba(37,99,235,0.88); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); color: #fff; font-size: 14px; font-weight: 500; padding: 12px 22px; border-radius: 28px; white-space: nowrap; box-shadow: 0 4px 20px rgba(37,99,235,0.5); display: flex; align-items: center; gap: 12px; pointer-events: all; border: 1px solid rgba(255,255,255,0.2); }
     #pick-cancel { background: rgba(255,255,255,0.2); border: none; color: #fff; font-size: 13px; font-weight: 500; padding: 5px 14px; border-radius: 14px; cursor: pointer; }
-
-    /* LOCATE */
     #btn-locate { position: absolute; top: 14px; left: 14px; width: 40px; height: 40px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 50%; box-shadow: var(--glass-shadow); cursor: pointer; z-index: 999; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: transform 0.15s; }
     #btn-locate:hover { transform: scale(1.08); }
-
-    /* DIR FIELD */
     .dir-wrap { position: relative; }
     #btn-pick-map { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: rgba(37,99,235,0.1); border: 1px solid rgba(37,99,235,0.25); color: var(--blue); font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
     #f-direccion { padding-right: 95px; }
-
-    /* HINT */
     #dblclick-hint { position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.55); backdrop-filter: var(--glass-blur); color: #fff; font-size: 12px; padding: 6px 14px; border-radius: 20px; z-index: 999; pointer-events: none; white-space: nowrap; opacity: 0; transition: opacity 0.3s; }
     #dblclick-hint.show { opacity: 1; }
-
-    /* LEYENDA */
     #legend { position: absolute; bottom: 20px; right: 10px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); box-shadow: var(--glass-shadow); font-size: 12px; color: var(--text-muted); z-index: 999; display: flex; flex-direction: column; overflow: hidden; }
     #legend::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.8),transparent); pointer-events:none; z-index:1; }
     .legend-item { display: flex; align-items: center; gap: 8px; padding: 9px 14px; cursor: pointer; transition: background 0.1s; border-bottom: 0.5px solid var(--border); white-space: nowrap; }
@@ -174,8 +97,6 @@
     .legend-count { margin-left: auto; font-weight: 700; font-size: 14px; padding-left: 12px; }
     .legend-count.blue { color: #2563EB; }
     .legend-count.red  { color: #dc2626; }
-
-    /* LIST PANEL */
     #list-panel { position: absolute; bottom: 14px; right: 10px; width: 300px; max-height: 420px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); box-shadow: var(--glass-shadow); z-index: 1000; display: none; flex-direction: column; overflow: hidden; }
     #list-panel::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.8),transparent); pointer-events:none; z-index:1; }
     #list-panel.open { display: flex; }
@@ -186,19 +107,17 @@
     .list-punto { padding: 11px 14px; border-bottom: 0.5px solid var(--border); }
     .list-punto:last-child { border-bottom: none; }
     .list-punto-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
-    .list-punto-name { font-size: 13px; font-weight: 600; }
-    .list-punto-time { font-size: 10px; color: var(--text-muted); }
+    .list-punto-name { font-size: 13px; font-weight: 600; color: var(--blue); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+    .list-punto-name:hover { color: var(--blue-dark); }
+    .list-punto-time { font-size: 10px; color: var(--text-muted); white-space: nowrap; margin-left: 6px; flex-shrink: 0; }
     .list-punto-meta { font-size: 11px; color: var(--text-muted); margin-bottom: 7px; line-height: 1.4; }
     .list-punto-actions { display: flex; gap: 8px; margin-top: 8px; }
     .list-punto-btn { display: inline-flex; align-items: center; gap: 5px; padding: 8px 14px; background: var(--blue); color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; }
-    .list-report-btn { display: inline-flex; align-items: center; gap: 5px; padding: 8px 14px; background: rgba(255,255,255,0.6); color: var(--text-muted); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; font-size: 13px; cursor: pointer; backdrop-filter: var(--glass-blur); }
+    .list-report-btn { display: inline-flex; align-items: center; gap: 5px; padding: 8px 14px; background: rgba(255,255,255,0.6); color: var(--text-muted); border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; font-size: 13px; cursor: pointer; }
     .list-empty { padding: 24px; text-align: center; font-size: 13px; color: var(--text-muted); }
-
-    /* SIDE PANEL */
     #side-panel { position: absolute; top: 10px; right: 10px; width: 340px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); box-shadow: var(--glass-shadow); z-index: 999; display: none; max-height: calc(100% - 20px); overflow-y: auto; overflow-x: hidden; }
     #side-panel::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.8),transparent); pointer-events:none; z-index:1; }
     #side-panel.open { display: block; }
-
     @media (min-width: 768px) {
       #side-panel { top: 50%; right: auto; left: 50%; transform: translate(-50%, -50%); width: 480px; max-height: 90vh; }
     }
@@ -212,23 +131,17 @@
     .form-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
     textarea.form-input { height: 65px; resize: none; }
     #coords-badge { font-size: 11px; color: var(--green); background: rgba(22,163,74,0.1); border: 1px solid rgba(22,163,74,0.2); padding: 3px 8px; border-radius: 6px; display: none; margin-top: 4px; }
-    #submit-btn { margin-top: 16px; width: 100%; padding: 11px; font-size: 14px; font-weight: 600; background: var(--blue); color: #fff; border: none; border-radius: var(--radius-xl); cursor: pointer; font-family: inherit; box-shadow: 0 2px 12px rgba(37,99,235,0.35); transition: transform 0.1s, box-shadow 0.1s; }
+    #submit-btn { margin-top: 16px; width: 100%; padding: 11px; font-size: 14px; font-weight: 600; background: var(--blue); color: #fff; border: none; border-radius: var(--radius-xl); cursor: pointer; font-family: inherit; box-shadow: 0 2px 12px rgba(37,99,235,0.35); transition: transform 0.1s; }
     #submit-btn:hover { background: var(--blue-dark); transform: translateY(-1px); }
     #submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
     #submit-thanks { display: none; text-align: center; padding: 28px 0; }
     #submit-thanks .thanks-icon { font-size: 36px; }
     #submit-thanks p { font-size: 13px; color: var(--text-muted); margin-top: 10px; line-height: 1.6; }
-
-    /* DISCLAIMER */
     #disclaimer { padding: 7px 16px; font-size: 13px; color: var(--text-muted); background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid var(--glass-border); text-align: center; flex-shrink: 0; line-height: 1.6; }
-
-    /* LOADING */
     #loading { position: absolute; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 2000; pointer-events: none; }
     #loading svg { animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     #loading p { font-size: 14px; color: var(--text-muted); }
-
-    /* POPUP */
     .popup-card { font-family: -apple-system, sans-serif; min-width: 220px; max-width: 260px; }
     .popup-name { font-size: 14px; font-weight: 600; color: #111; margin-bottom: 3px; }
     .popup-type { font-size: 11px; color: #666; margin-bottom: 6px; }
@@ -242,13 +155,13 @@
     .popup-btn { flex: 1; padding: 7px; font-size: 12px; font-weight: 600; background: #2563EB; color: #fff !important; border: none; border-radius: 8px; cursor: pointer; text-align: center; text-decoration: none !important; display: block; }
     .popup-share-btn { flex: 0 0 auto; padding: 7px 10px; font-size: 14px; background: #f1f5f9; border: none; border-radius: 8px; cursor: pointer; }
     .popup-report-btn { width: 100%; margin-top: 5px; padding: 5px; font-size: 11px; background: transparent; color: #9ca3af; border: none; cursor: pointer; text-align: center; }
-
     @media (max-width: 600px) {
       #topbar-row1 { flex-wrap: wrap; }
       #logo-block { flex: 1; }
       #btn-add { flex-shrink: 0; }
       #search-wrap { order: 3; flex: 1 1 100%; }
-      #side-panel, #list-panel { width: calc(100% - 20px); }
+      #side-panel { width: calc(100% - 20px); top: auto; bottom: 10px; right: 10px; max-height: 70vh; }
+      #list-panel { width: calc(100% - 20px); }
     }
   </style>
 </head>
@@ -317,7 +230,6 @@
         <span class="legend-count red" id="count-necesidad">0</span>
       </div>
     </div>
-
     <div id="list-panel">
       <div id="list-panel-header">
         <span id="list-panel-title">Puntos de ayuda</span>
@@ -325,8 +237,7 @@
       </div>
       <div id="list-panel-body"></div>
     </div>
-    <div id="dblclick-hint">📍 Punto agregado al mapa — haz doble click en cualquier lugar</div>
-
+    <div id="dblclick-hint">📍 Punto agregado al mapa</div>
     <div id="side-panel">
       <div id="panel-header">
         <span id="panel-title">Agregar punto de ayuda</span>
@@ -336,12 +247,10 @@
         <div id="form-section">
           <label class="form-label">¿Qué tipo de punto es este? *</label>
           <div id="tipo-selector" style="display:flex;gap:8px;margin-bottom:4px">
-            <button type="button" class="tipo-btn active" data-tipo="ayuda"
-              style="flex:1;padding:10px 8px;border-radius:var(--radius);border:2px solid #16a34a;background:#dcfce7;color:#166534;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">
+            <button type="button" class="tipo-btn active" data-tipo="ayuda" style="flex:1;padding:10px 8px;border-radius:var(--radius);border:2px solid #16a34a;background:#dcfce7;color:#166534;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">
               🟢 Punto de ayuda<br><span style="font-size:11px;font-weight:400">Estoy dando / distribuyendo</span>
             </button>
-            <button type="button" class="tipo-btn" data-tipo="necesidad"
-              style="flex:1;padding:10px 8px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg-secondary);color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">
+            <button type="button" class="tipo-btn" data-tipo="necesidad" style="flex:1;padding:10px 8px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg-secondary);color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">
               🔴 Punto de necesidad<br><span style="font-size:11px;font-weight:400">Necesito / nos falta</span>
             </button>
           </div>
@@ -401,51 +310,57 @@ const SUPABASE_KEY = 'sb_publishable_bx7plOxEb3M4aNID_stt-g_WPh-FS88';
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// Tiempos de expiración
+const EXPIRY_AYUDA     = 72 * 60 * 60 * 1000; // 72 horas
+const EXPIRY_NECESIDAD = 24 * 60 * 60 * 1000; // 24 horas
+
 const catsAyuda = {
-  acopio:      { label:'Centro de acopio',           icon:'📦' },
-  donaciones:  { label:'Centro de donaciones',        icon:'🤝' },
-  agua:        { label:'Agua potable',                icon:'💧' },
-  comida:      { label:'Comida / alimentos',          icon:'🍲' },
-  refugio:     { label:'Refugio / albergue',          icon:'🏠' },
-  medico:      { label:'Atención médica',             icon:'🏥' },
-  medicamentos:{ label:'Medicamentos',                icon:'💊' },
-  carga:       { label:'Carga eléctrica / internet',  icon:'🔋' },
-  mascotas:    { label:'Ayuda para mascotas',         icon:'🐶' },
-  combustible: { label:'Combustible',                 icon:'⛽' },
-  transporte:  { label:'Transporte / traslados',      icon:'🚗' },
-  higiene:     { label:'Artículos de higiene',        icon:'🧴' },
+  acopio:      { label:'Centro de acopio',          icon:'📦' },
+  donaciones:  { label:'Centro de donaciones',       icon:'🤝' },
+  agua:        { label:'Agua potable',               icon:'💧' },
+  comida:      { label:'Comida / alimentos',         icon:'🍲' },
+  refugio:     { label:'Refugio / albergue',         icon:'🏠' },
+  medico:      { label:'Atención médica',            icon:'🏥' },
+  medicamentos:{ label:'Medicamentos',               icon:'💊' },
+  carga:       { label:'Carga eléctrica / internet', icon:'🔋' },
+  mascotas:    { label:'Ayuda para mascotas',        icon:'🐶' },
+  combustible: { label:'Combustible',                icon:'⛽' },
+  transporte:  { label:'Transporte / traslados',     icon:'🚗' },
+  higiene:     { label:'Artículos de higiene',       icon:'🧴' },
 };
-
 const catsNecesidad = {
-  agua:        { label:'Agua potable',             icon:'💧' },
-  alimentos:   { label:'Alimentos',                icon:'🍲' },
-  medicamentos:{ label:'Medicamentos y primeros auxilios', icon:'💊' },
-  refugio:     { label:'Refugio / alojamiento',    icon:'🏠' },
-  ropa:        { label:'Ropa y calzado',           icon:'👕' },
-  rescate:     { label:'Equipos de rescate',       icon:'🪖' },
-  herramientas:{ label:'Herramientas y materiales',icon:'🧰' },
-  iluminacion: { label:'Linternas / baterías',     icon:'🔦' },
-  higiene:     { label:'Artículos de higiene',     icon:'🧴' },
-  mascotas:    { label:'Ayuda para mascotas',      icon:'🐶' },
-  bebes:       { label:'Artículos para bebés y niños', icon:'👶' },
-  transporte:  { label:'Transporte / traslados',   icon:'🚗' },
-  voluntarios: { label:'Personal médico / voluntarios', icon:'🩺' },
+  agua:        { label:'Agua potable',                      icon:'💧' },
+  alimentos:   { label:'Alimentos',                         icon:'🍲' },
+  medicamentos:{ label:'Medicamentos y primeros auxilios',   icon:'💊' },
+  refugio:     { label:'Refugio / alojamiento',             icon:'🏠' },
+  ropa:        { label:'Ropa y calzado',                    icon:'👕' },
+  rescate:     { label:'Equipos de rescate',                icon:'🪖' },
+  herramientas:{ label:'Herramientas y materiales',         icon:'🧰' },
+  iluminacion: { label:'Linternas / baterías',              icon:'🔦' },
+  higiene:     { label:'Artículos de higiene',              icon:'🧴' },
+  mascotas:    { label:'Ayuda para mascotas',               icon:'🐶' },
+  bebes:       { label:'Artículos para bebés y niños',      icon:'👶' },
+  transporte:  { label:'Transporte / traslados',            icon:'🚗' },
+  voluntarios: { label:'Personal médico / voluntarios',     icon:'🩺' },
 };
-
 const cats = { ...catsAyuda, ...catsNecesidad };
 
 let map, markers = [], allPuntos = [], activeFilter = 'todos', activeTipo = 'todos';
-let pendingLat = null, pendingLng = null;
-let searchTimeout = null;
-let pickMode = false;
-let pickMarker = null;
+let pendingLat = null, pendingLng = null, searchTimeout = null, pickMode = false, pickMarker = null;
 
-const iconCache = {};
-function markerColor(pt) {
-  return (pt.tipo === 'necesidad') ? '#dc2626' : '#2563EB';
+// ─── EXPIRACIÓN ───────────────────────────────────────────────
+function isPuntoActivo(pt) {
+  if (!pt.created_at) return true;
+  const age  = Date.now() - new Date(pt.created_at).getTime();
+  const limit = (pt.tipo === 'necesidad') ? EXPIRY_NECESIDAD : EXPIRY_AYUDA;
+  return age < limit;
 }
+
+// ─── ICONOS ────────────────────────────────────────────────────
+const iconCache = {};
+function markerColor(pt) { return pt.tipo === 'necesidad' ? '#dc2626' : '#2563EB'; }
 function createIcon(pt) {
-  const key = `${pt.categoria}-${pt.estado}-${pt.tipo||'ayuda'}`;
+  const key = `${pt.categoria}-${pt.tipo||'ayuda'}`;
   if (iconCache[key]) return iconCache[key];
   const color = markerColor(pt);
   const emoji = cats[pt.categoria]?.icon || '📍';
@@ -454,6 +369,8 @@ function createIcon(pt) {
   iconCache[key] = icon;
   return icon;
 }
+
+// ─── TIEMPO RELATIVO ───────────────────────────────────────────
 function timeAgo(dateStr) {
   if (!dateStr) return '';
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -462,25 +379,30 @@ function timeAgo(dateStr) {
   if (m < 60) return `Hace ${m} min`;
   const h = Math.floor(m / 60);
   if (h < 24) return `Hace ${h}h`;
-  const d = Math.floor(h / 24);
-  return `Hace ${d} día${d > 1 ? 's' : ''}`;
+  return `Hace ${Math.floor(h/24)} día${Math.floor(h/24)>1?'s':''}`;
 }
 
+function timeLeft(pt) {
+  if (!pt.created_at) return '';
+  const limit = (pt.tipo === 'necesidad') ? EXPIRY_NECESIDAD : EXPIRY_AYUDA;
+  const remaining = limit - (Date.now() - new Date(pt.created_at).getTime());
+  if (remaining <= 0) return 'Expirado';
+  const h = Math.floor(remaining / 3600000);
+  if (h < 1) return 'Expira en menos de 1h';
+  return `Expira en ${h}h`;
+}
+
+// ─── POPUP / MARKERS ───────────────────────────────────────────
 async function reportarPunto(id) {
   if (!confirm('¿Marcar este punto como información desactualizada?')) return;
   await db.from('puntos').update({ estado: 'old' }).eq('id', id);
   loadPuntos();
 }
-
 function compartirPunto(id, nombre) {
   const url = `${location.origin}${location.pathname}?punto=${id}`;
-  if (navigator.share) {
-    navigator.share({ title: nombre, text: `📍 ${nombre} — CaracasAyuda`, url });
-  } else {
-    navigator.clipboard.writeText(url).then(() => alert('¡Link copiado!'));
-  }
+  if (navigator.share) { navigator.share({ title: nombre, text: `📍 ${nombre} — CaracasAyuda`, url }); }
+  else { navigator.clipboard.writeText(url).then(() => alert('¡Link copiado!')); }
 }
-
 function statusBadge(estado) {
   if (estado === 'verified') return '<span class="popup-status status-verified">🟢 Verificado</span>';
   if (estado === 'pending')  return '<span class="popup-status status-pending">🟡 Por verificar</span>';
@@ -491,34 +413,40 @@ function renderMarkers() {
   markers.forEach(m => map.removeLayer(m));
   markers = [];
   const q = document.getElementById('search-input').value.toLowerCase();
+
+  // Filtrar por activos (no expirados) + filtros de UI
   const filtered = allPuntos.filter(p => {
+    if (!isPuntoActivo(p)) return false;
     const catOk  = activeFilter === 'todos' || p.categoria === activeFilter;
     const tipoOk = activeTipo  === 'todos' || (p.tipo||'ayuda') === activeTipo;
     const qOk    = !q || p.nombre.toLowerCase().includes(q) || (p.descripcion||'').toLowerCase().includes(q) || (p.direccion||'').toLowerCase().includes(q);
     return catOk && tipoOk && qOk;
   });
-  const totalAyuda     = allPuntos.filter(p => (p.tipo||'ayuda') === 'ayuda').length;
-  const totalNecesidad = allPuntos.filter(p => p.tipo === 'necesidad').length;
-  document.getElementById('count-ayuda').textContent     = totalAyuda;
-  document.getElementById('count-necesidad').textContent = totalNecesidad;
+
+  // Contadores (solo puntos activos)
+  const activos = allPuntos.filter(isPuntoActivo);
+  document.getElementById('count-ayuda').textContent     = activos.filter(p => (p.tipo||'ayuda') === 'ayuda').length;
+  document.getElementById('count-necesidad').textContent = activos.filter(p => p.tipo === 'necesidad').length;
+
   filtered.forEach(pt => {
     const ci = cats[pt.categoria] || {};
     const tipoBadge = pt.tipo === 'necesidad'
       ? '<span style="display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:500;background:#fee2e2;color:#991b1b;margin-bottom:6px">🔴 Punto de necesidad</span>'
       : '<span style="display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:500;background:#dcfce7;color:#166534;margin-bottom:6px">🟢 Punto de ayuda</span>';
+    const expiryLabel = pt.tipo === 'necesidad' ? '24h' : '72h';
     const m = L.marker([pt.lat, pt.lng], { icon: createIcon(pt) });
+    m._puntoId = pt.id;
     m.bindPopup(`<div class="popup-card">
       <div class="popup-name">${ci.icon||''} ${pt.nombre}</div>
       <div class="popup-type">${ci.label||pt.categoria}</div>
-      ${tipoBadge}
-      ${statusBadge(pt.estado)}
+      ${tipoBadge}${statusBadge(pt.estado)}
       ${pt.direccion  ? `<div class="popup-row">📍 ${pt.direccion}</div>`  : ''}
       ${pt.horario    ? `<div class="popup-row">🕐 ${pt.horario}</div>`    : ''}
       ${pt.telefono   ? `<div class="popup-row">📞 ${pt.telefono}</div>`   : ''}
       ${pt.descripcion? `<div class="popup-row" style="margin-top:5px">${pt.descripcion}</div>` : ''}
-      <div class="popup-time">${timeAgo(pt.created_at)}</div>
+      <div class="popup-time">${timeAgo(pt.created_at)} · Visible por ${expiryLabel}</div>
       <div class="popup-actions">
-        <a class="popup-btn" href="https://maps.google.com/?q=${pt.lat},${pt.lng}" target="_blank">Cómo llegar →</a>
+        <a class="popup-btn" href="https://maps.google.com/?q=${pt.lat},${pt.lng}" target="_blank">🗺️ Cómo llegar</a>
         <button class="popup-share-btn" onclick="compartirPunto('${pt.id}','${pt.nombre.replace(/'/g,"\\'")}')">Compartir</button>
       </div>
       <button class="popup-report-btn" onclick="reportarPunto('${pt.id}')">⚠️ Reportar</button>
@@ -538,79 +466,58 @@ async function loadPuntos() {
   renderMarkers();
 }
 
+// ─── PICK MODE ────────────────────────────────────────────────
 function enterPickMode() {
   pickMode = true;
   map.getContainer().classList.add('picking');
   document.getElementById('pick-overlay').classList.add('active');
   document.getElementById('side-panel').classList.remove('open');
 }
-
 function exitPickMode() {
   pickMode = false;
   map.getContainer().classList.remove('picking');
   document.getElementById('pick-overlay').classList.remove('active');
 }
-
-function exitPickModeAndReopen() {
-  exitPickMode();
-  document.getElementById('side-panel').classList.add('open');
-}
+function exitPickModeAndReopen() { exitPickMode(); document.getElementById('side-panel').classList.add('open'); }
 
 async function reverseGeocode(lat, lng) {
   try {
-    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
-    const data = await fetch(url).then(r => r.json());
+    const data = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18`).then(r => r.json());
     return data.display_name || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-  } catch(e) {
-    return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-  }
+  } catch(e) { return `${lat.toFixed(5)}, ${lng.toFixed(5)}`; }
 }
 
 function setPickedLocation(lat, lng) {
   pendingLat = lat; pendingLng = lng;
   if (pickMarker) map.removeLayer(pickMarker);
-  pickMarker = L.marker([lat, lng], {
-    icon: L.divIcon({
-      html: `<div style="width:22px;height:22px;background:#2563EB;border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(37,99,235,0.5)"></div>`,
-      className: '', iconSize: [22,22], iconAnchor: [11,11]
-    })
-  }).addTo(map);
+  pickMarker = L.marker([lat, lng], { icon: L.divIcon({ html: `<div style="width:22px;height:22px;background:#2563EB;border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(37,99,235,0.5)"></div>`, className: '', iconSize: [22,22], iconAnchor: [11,11] }) }).addTo(map);
   const badge = document.getElementById('coords-badge');
   badge.style.display = 'block';
   badge.textContent = '📍 Obteniendo dirección...';
   reverseGeocode(lat, lng).then(addr => {
-    const shortAddr = addr.split(',').slice(0,3).join(',').trim();
-    document.getElementById('f-direccion').value = shortAddr;
+    document.getElementById('f-direccion').value = addr.split(',').slice(0,3).join(',').trim();
     badge.textContent = `📍 ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
   });
   exitPickModeAndReopen();
 }
 
 async function submitForm() {
-  const nombre   = document.getElementById('f-nombre').value.trim();
-  const direccion= document.getElementById('f-direccion').value.trim();
+  const nombre    = document.getElementById('f-nombre').value.trim();
+  const direccion = document.getElementById('f-direccion').value.trim();
   if (!nombre || !direccion) { alert('Por favor completa nombre y dirección.'); return; }
-  const lat = pendingLat ?? 10.49;
-  const lng = pendingLng ?? -66.90;
+  const lat = pendingLat ?? 10.49, lng = pendingLng ?? -66.90;
   const btn = document.getElementById('submit-btn');
   btn.disabled = true; btn.textContent = 'Publicando...';
   const { error } = await db.from('puntos').insert({
-    nombre,
-    categoria:     document.getElementById('f-categoria').value,
-    tipo:          document.getElementById('f-tipo').value,
-    lat, lng,
-    direccion,
-    horario:       document.getElementById('f-horario').value.trim(),
-    telefono:      document.getElementById('f-telefono').value.trim(),
-    descripcion:   document.getElementById('f-descripcion').value.trim(),
+    nombre, categoria: document.getElementById('f-categoria').value,
+    tipo: document.getElementById('f-tipo').value, lat, lng, direccion,
+    horario: document.getElementById('f-horario').value.trim(),
+    telefono: document.getElementById('f-telefono').value.trim(),
+    descripcion: document.getElementById('f-descripcion').value.trim(),
     reportado_por: document.getElementById('f-reportado').value.trim(),
-    estado:        'pending',
+    estado: 'pending',
   });
-  if (error) {
-    alert('Error al publicar. Intenta de nuevo.');
-    btn.disabled = false; btn.textContent = 'Publicar punto';
-    return;
-  }
+  if (error) { alert('Error al publicar. Intenta de nuevo.'); btn.disabled = false; btn.textContent = 'Publicar punto'; return; }
   if (pickMarker) { map.removeLayer(pickMarker); pickMarker = null; }
   await loadPuntos();
   document.getElementById('form-section').style.display = 'none';
@@ -619,8 +526,7 @@ async function submitForm() {
 
 function abrirFormularioDesdeSearch(lat, lng, nombre, direccion) {
   if (searchMarker) searchMarker.closePopup();
-  pendingLat = lat;
-  pendingLng = lng;
+  pendingLat = lat; pendingLng = lng;
   document.getElementById('f-direccion').value = direccion;
   const badge = document.getElementById('coords-badge');
   badge.style.display = 'block';
@@ -636,13 +542,9 @@ function resetForm() {
   pendingLat = null; pendingLng = null;
   if (pickMarker) { map.removeLayer(pickMarker); pickMarker = null; }
   document.getElementById('f-tipo').value = 'ayuda';
-  document.querySelectorAll('.tipo-btn').forEach(b => {
-    b.style.borderColor = 'var(--border)';
-    b.style.background  = 'var(--bg-secondary)';
-    b.style.color       = 'var(--text-muted)';
-  });
-  const ayudaBtn = document.querySelector('.tipo-btn[data-tipo="ayuda"]');
-  if (ayudaBtn) { ayudaBtn.style.borderColor='#16a34a'; ayudaBtn.style.background='#dcfce7'; ayudaBtn.style.color='#166534'; }
+  document.querySelectorAll('.tipo-btn').forEach(b => { b.style.borderColor='var(--border)'; b.style.background='var(--bg-secondary)'; b.style.color='var(--text-muted)'; });
+  const a = document.querySelector('.tipo-btn[data-tipo="ayuda"]');
+  if (a) { a.style.borderColor='#16a34a'; a.style.background='#dcfce7'; a.style.color='#166534'; }
   document.getElementById('form-section').style.display = 'block';
   document.getElementById('submit-thanks').style.display = 'none';
   document.getElementById('submit-btn').disabled = false;
@@ -654,25 +556,13 @@ let searchMarker = null;
 async function geocodeSearch(q) {
   const res = document.getElementById('search-results');
   if (!q || q.length < 3) { res.style.display = 'none'; return; }
-  const localMatches = allPuntos.filter(p =>
-    p.nombre.toLowerCase().includes(q.toLowerCase()) ||
-    (p.direccion||'').toLowerCase().includes(q.toLowerCase())
-  ).slice(0, 3).map(p => ({ type:'punto', name: p.nombre, addr: p.direccion||'', lat: p.lat, lng: p.lng, cat: p.categoria }));
+  const localMatches = allPuntos.filter(p => isPuntoActivo(p) && (p.nombre.toLowerCase().includes(q.toLowerCase()) || (p.direccion||'').toLowerCase().includes(q.toLowerCase()))).slice(0,3).map(p => ({ type:'punto', name:p.nombre, addr:p.direccion||'', lat:p.lat, lng:p.lng, cat:p.categoria }));
   try {
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q + ' Venezuela')}&limit=4&countrycodes=ve`;
-    const data = await fetch(url).then(r => r.json());
-    const geoMatches = data.map(d => ({ type:'geo', name: d.display_name.split(',')[0], addr: d.display_name, lat: parseFloat(d.lat), lng: parseFloat(d.lon) }));
-    const all = [...localMatches, ...geoMatches].slice(0, 6);
+    const data = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q+' Venezuela')}&limit=4&countrycodes=ve`).then(r => r.json());
+    const geoMatches = data.map(d => ({ type:'geo', name:d.display_name.split(',')[0], addr:d.display_name, lat:parseFloat(d.lat), lng:parseFloat(d.lon) }));
+    const all = [...localMatches, ...geoMatches].slice(0,6);
     if (!all.length) { res.style.display = 'none'; return; }
-    res.innerHTML = all.map((item, i) => `
-      <div class="search-item" data-i="${i}">
-        <span class="search-item-icon">${item.type === 'punto' ? (cats[item.cat]?.icon||'📍') : '🔍'}</span>
-        <div>
-          <div class="search-item-name">${item.name}</div>
-          <div class="search-item-addr">${item.addr}</div>
-        </div>
-      </div>
-    `).join('');
+    res.innerHTML = all.map((item, i) => `<div class="search-item" data-i="${i}"><span class="search-item-icon">${item.type==='punto'?(cats[item.cat]?.icon||'📍'):'🔍'}</span><div><div class="search-item-name">${item.name}</div><div class="search-item-addr">${item.addr}</div></div></div>`).join('');
     res.style.display = 'block';
     res.querySelectorAll('.search-item').forEach((el, i) => {
       el.addEventListener('click', () => {
@@ -682,114 +572,58 @@ async function geocodeSearch(q) {
         document.getElementById('search-input').value = item.name;
         document.getElementById('search-clear').style.display = 'block';
         if (searchMarker) { map.removeLayer(searchMarker); searchMarker = null; }
-        if (item.type === 'punto') {
-          renderMarkers();
-        } else {
-          searchMarker = L.marker([item.lat, item.lng], {
-            icon: L.divIcon({
-              html: `<div style="display:flex;flex-direction:column;align-items:center">
-                <div style="background:#2563EB;color:#fff;font-size:11px;font-weight:600;padding:3px 8px;border-radius:10px;white-space:nowrap;box-shadow:0 2px 6px rgba(37,99,235,0.4)">${item.name}</div>
-                <div style="width:2px;height:6px;background:#2563EB;margin:0 auto"></div>
-                <div style="width:12px;height:12px;background:#2563EB;border:2px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.2)"></div>
-              </div>`,
-              className: '', iconSize: [120, 40], iconAnchor: [60, 40]
-            })
-          }).addTo(map);
-          searchMarker.bindPopup(`
-            <div style="font-family:-apple-system,sans-serif;min-width:180px;text-align:center;padding:4px 0">
-              <div style="font-size:13px;font-weight:600;color:#111;margin-bottom:4px">${item.name}</div>
-              <div style="font-size:11px;color:#666;margin-bottom:10px">${item.addr.split(',').slice(0,2).join(',')}</div>
-              <button onclick="abrirFormularioDesdeSearch(${item.lat}, ${item.lng}, '${item.name.replace(/'/g,"\\'")}', '${item.addr.split(',').slice(0,3).join(',').replace(/'/g,"\\'")}' )"
-                style="width:100%;padding:8px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">
-                + Agregar punto aquí
-              </button>
-            </div>
-          `, { closeButton: true, maxWidth: 220 }).openPopup();
+        if (item.type === 'punto') { renderMarkers(); }
+        else {
+          searchMarker = L.marker([item.lat, item.lng], { icon: L.divIcon({ html:`<div style="display:flex;flex-direction:column;align-items:center"><div style="background:#2563EB;color:#fff;font-size:11px;font-weight:600;padding:3px 8px;border-radius:10px;white-space:nowrap;box-shadow:0 2px 6px rgba(37,99,235,0.4)">${item.name}</div><div style="width:2px;height:6px;background:#2563EB;margin:0 auto"></div><div style="width:12px;height:12px;background:#2563EB;border:2px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.2)"></div></div>`, className:'', iconSize:[120,40], iconAnchor:[60,40] }) }).addTo(map);
+          searchMarker.bindPopup(`<div style="font-family:-apple-system,sans-serif;min-width:180px;text-align:center;padding:4px 0"><div style="font-size:13px;font-weight:600;color:#111;margin-bottom:4px">${item.name}</div><div style="font-size:11px;color:#666;margin-bottom:10px">${item.addr.split(',').slice(0,2).join(',')}</div><button onclick="abrirFormularioDesdeSearch(${item.lat},${item.lng},'${item.name.replace(/'/g,"\\'")}','${item.addr.split(',').slice(0,3).join(',').replace(/'/g,"\\'")}' )" style="width:100%;padding:8px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">+ Agregar punto aquí</button></div>`, { closeButton:true, maxWidth:220 }).openPopup();
         }
       });
     });
   } catch(e) { res.style.display = 'none'; }
 }
 
+// ─── INIT ─────────────────────────────────────────────────────
 window.addEventListener('load', () => {
   map = L.map('map', { zoomControl: false, doubleClickZoom: false }).setView([10.49, -66.90], 12);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors', maxZoom: 19
-  }).addTo(map);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors', maxZoom: 19 }).addTo(map);
   L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
   loadPuntos();
   setTimeout(() => { document.getElementById('loading').style.display = 'none'; }, 5000);
   setInterval(loadPuntos, 30000);
 
-  map.on('click', (e) => {
-    if (!pickMode) return;
-    setPickedLocation(e.latlng.lat, e.latlng.lng);
-  });
-
-  document.getElementById('btn-pick-map').addEventListener('click', () => {
-    document.getElementById('side-panel').classList.add('open');
-    enterPickMode();
-  });
-
-  document.getElementById('pick-cancel').addEventListener('click', () => {
-    exitPickModeAndReopen();
-  });
+  map.on('click', e => { if (pickMode) setPickedLocation(e.latlng.lat, e.latlng.lng); });
+  document.getElementById('btn-pick-map').addEventListener('click', () => { document.getElementById('side-panel').classList.add('open'); enterPickMode(); });
+  document.getElementById('pick-cancel').addEventListener('click', exitPickModeAndReopen);
 
   document.querySelectorAll('.filter-btn:not(.filter-tipo)').forEach(btn => {
     btn.addEventListener('click', function() {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-      activeFilter = this.dataset.cat;
-      activeTipo = 'todos';
-      renderMarkers();
+      this.classList.add('active'); activeFilter = this.dataset.cat; activeTipo = 'todos'; renderMarkers();
     });
   });
-
   document.querySelectorAll('.filter-tipo').forEach(btn => {
     btn.addEventListener('click', function() {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-      activeTipo = this.dataset.tipo;
-      activeFilter = 'todos';
-      renderMarkers();
+      this.classList.add('active'); activeTipo = this.dataset.tipo; activeFilter = 'todos'; renderMarkers();
     });
   });
 
   function updateCategorias(tipo) {
     const sel = document.getElementById('f-categoria');
     const catMap = tipo === 'necesidad' ? catsNecesidad : catsAyuda;
-    sel.innerHTML = Object.entries(catMap).map(([val, c]) =>
-      `<option value="${val}">${c.icon} ${c.label}</option>`
-    ).join('');
+    sel.innerHTML = Object.entries(catMap).map(([val, c]) => `<option value="${val}">${c.icon} ${c.label}</option>`).join('');
     const desc = document.getElementById('label-descripcion');
-    const textarea = document.getElementById('f-descripcion');
-    if (tipo === 'necesidad') {
-      desc.textContent = 'Qué necesitan / descripción';
-      textarea.placeholder = 'Ej. Cascos, guantes, agua, comida enlatada...';
-    } else {
-      desc.textContent = 'Qué ofrecen / descripción';
-      textarea.placeholder = 'Ej. Agua embotellada, comida enlatada...';
-    }
+    const ta   = document.getElementById('f-descripcion');
+    if (tipo === 'necesidad') { desc.textContent = 'Qué necesitan / descripción'; ta.placeholder = 'Ej. Cascos, guantes, agua...'; }
+    else { desc.textContent = 'Qué ofrecen / descripción'; ta.placeholder = 'Ej. Agua embotellada, comida enlatada...'; }
   }
-
   document.querySelectorAll('.tipo-btn').forEach(btn => {
     btn.addEventListener('click', function() {
-      document.querySelectorAll('.tipo-btn').forEach(b => {
-        b.style.borderColor = 'var(--border)';
-        b.style.background  = 'var(--bg-secondary)';
-        b.style.color       = 'var(--text-muted)';
-      });
+      document.querySelectorAll('.tipo-btn').forEach(b => { b.style.borderColor='var(--border)'; b.style.background='var(--bg-secondary)'; b.style.color='var(--text-muted)'; });
       const tipo = this.dataset.tipo;
-      if (tipo === 'ayuda') {
-        this.style.borderColor = '#16a34a';
-        this.style.background  = '#dcfce7';
-        this.style.color       = '#166534';
-      } else {
-        this.style.borderColor = '#dc2626';
-        this.style.background  = '#fee2e2';
-        this.style.color       = '#991b1b';
-      }
+      if (tipo === 'ayuda') { this.style.borderColor='#16a34a'; this.style.background='#dcfce7'; this.style.color='#166534'; }
+      else { this.style.borderColor='#dc2626'; this.style.background='#fee2e2'; this.style.color='#991b1b'; }
       document.getElementById('f-tipo').value = tipo;
       updateCategorias(tipo);
     });
@@ -797,7 +631,7 @@ window.addEventListener('load', () => {
 
   const searchInput = document.getElementById('search-input');
   const searchClear = document.getElementById('search-clear');
-  searchInput.addEventListener('input', (e) => {
+  searchInput.addEventListener('input', e => {
     const q = e.target.value;
     searchClear.style.display = q ? 'block' : 'none';
     clearTimeout(searchTimeout);
@@ -805,83 +639,59 @@ window.addEventListener('load', () => {
     searchTimeout = setTimeout(() => geocodeSearch(q), 350);
   });
   searchClear.addEventListener('click', () => {
-    searchInput.value = '';
-    searchClear.style.display = 'none';
+    searchInput.value = ''; searchClear.style.display = 'none';
     document.getElementById('search-results').style.display = 'none';
     if (searchMarker) { map.removeLayer(searchMarker); searchMarker = null; }
     renderMarkers();
   });
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('#search-wrap')) document.getElementById('search-results').style.display = 'none';
-  });
+  document.addEventListener('click', e => { if (!e.target.closest('#search-wrap')) document.getElementById('search-results').style.display = 'none'; });
 
-  // Geolocalización — mejorada para iOS Safari
+  // Geolocalización mejorada para iOS Safari
   document.getElementById('btn-locate').addEventListener('click', () => {
     const btn = document.getElementById('btn-locate');
-    if (!navigator.geolocation) {
-      alert('Tu navegador no soporta geolocalización.');
-      return;
-    }
+    if (!navigator.geolocation) { alert('Tu navegador no soporta geolocalización.'); return; }
     btn.textContent = '⏳';
     navigator.geolocation.getCurrentPosition(
       pos => {
         const { latitude: lat, longitude: lng } = pos.coords;
-        map.setView([lat, lng], 15);
-        btn.textContent = '📍';
-        L.circleMarker([lat, lng], {
-          radius: 10, fillColor: '#2563EB', fillOpacity: 1,
-          color: '#fff', weight: 2.5
-        }).addTo(map).bindPopup('📍 Estás aquí').openPopup();
+        map.setView([lat, lng], 15); btn.textContent = '📍';
+        L.circleMarker([lat, lng], { radius:10, fillColor:'#2563EB', fillOpacity:1, color:'#fff', weight:2.5 }).addTo(map).bindPopup('📍 Estás aquí').openPopup();
       },
-      (err) => {
+      err => {
         btn.textContent = '📍';
-        if (err.code === 1) {
-          alert('Permiso denegado. Activa la ubicación en Ajustes → Safari → Ubicación.');
-        } else if (err.code === 2) {
-          alert('No se pudo obtener tu ubicación. Verifica que el GPS esté activado.');
-        } else {
-          alert('Tiempo de espera agotado. Intenta de nuevo.');
-        }
+        if (err.code === 1) alert('Permiso denegado. Activa la ubicación en Ajustes → Safari → Ubicación.');
+        else if (err.code === 2) alert('No se pudo obtener tu ubicación. Verifica que el GPS esté activado.');
+        else alert('Tiempo de espera agotado. Intenta de nuevo.');
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
   });
 
-  // Deep link: ?punto=ID
-  const urlParams = new URLSearchParams(location.search);
-  const puntoId = urlParams.get('punto');
+  // Deep link ?punto=ID
+  const puntoId = new URLSearchParams(location.search).get('punto');
   if (puntoId) {
     const check = setInterval(() => {
       const pt = allPuntos.find(p => String(p.id) === String(puntoId));
-      if (pt) {
-        clearInterval(check);
-        map.setView([pt.lat, pt.lng], 16);
-        const m = markers.find(mk => mk.getLatLng().lat === pt.lat && mk.getLatLng().lng === pt.lng);
-        if (m) m.openPopup();
-      }
+      if (pt) { clearInterval(check); map.setView([pt.lat, pt.lng], 16); const m = markers.find(mk => mk._puntoId === pt.id); if (m) m.openPopup(); }
     }, 300);
     setTimeout(() => clearInterval(check), 5000);
   }
 
+  // ─── LISTA PANEL — nombre clickeable centra en mapa ──────────
   function openListPanel(tipo) {
-    const puntos = allPuntos.filter(p => (p.tipo||'ayuda') === tipo);
-    const title  = tipo === 'ayuda' ? '🔵 Puntos de ayuda' : '🔴 Puntos de necesidad';
-    document.getElementById('list-panel-title').textContent = title;
+    const puntos = allPuntos.filter(p => (p.tipo||'ayuda') === tipo && isPuntoActivo(p));
+    document.getElementById('list-panel-title').textContent = tipo === 'ayuda' ? '🔵 Puntos de ayuda' : '🔴 Puntos de necesidad';
     const body = document.getElementById('list-panel-body');
-    if (!puntos.length) {
-      body.innerHTML = `<div class="list-empty">No hay puntos de ${tipo} aún.</div>`;
-    } else {
+    if (!puntos.length) { body.innerHTML = `<div class="list-empty">No hay puntos de ${tipo} activos.</div>`; }
+    else {
       body.innerHTML = puntos.map(p => {
         const ci = cats[p.categoria] || {};
         return `<div class="list-punto">
           <div class="list-punto-header">
-            <div class="list-punto-name">${ci.icon||'📍'} ${p.nombre}</div>
-            <div class="list-punto-time">${timeAgo(p.created_at)}</div>
+            <span class="list-punto-name" onclick="irAlPunto('${p.id}')">${ci.icon||'📍'} ${p.nombre}</span>
+            <span class="list-punto-time">${timeAgo(p.created_at)}</span>
           </div>
-          <div class="list-punto-meta">
-            ${ci.label||p.categoria}${p.direccion ? ` · ${p.direccion}` : ''}
-            ${p.horario ? `<br>🕐 ${p.horario}` : ''}
-          </div>
+          <div class="list-punto-meta">${ci.label||p.categoria}${p.direccion ? ` · ${p.direccion}` : ''}${p.horario ? `<br>🕐 ${p.horario}` : ''}</div>
           <div class="list-punto-actions">
             <a class="list-punto-btn" href="https://maps.google.com/?q=${p.lat},${p.lng}" target="_blank">Cómo llegar →</a>
             <button class="list-report-btn" onclick="compartirPunto('${p.id}','${p.nombre.replace(/'/g,"\\'")}')">Compartir</button>
@@ -906,15 +716,23 @@ window.addEventListener('load', () => {
     document.getElementById('form-section').style.display = 'block';
     document.getElementById('submit-thanks').style.display = 'none';
   });
-  document.getElementById('panel-close').addEventListener('click', () => {
-    document.getElementById('side-panel').classList.remove('open');
-    exitPickMode();
-  });
+  document.getElementById('panel-close').addEventListener('click', () => { document.getElementById('side-panel').classList.remove('open'); exitPickMode(); });
   document.getElementById('submit-btn').addEventListener('click', submitForm);
-  document.getElementById('banner-close').addEventListener('click', () => {
-    document.getElementById('banner').style.display = 'none';
-  });
+  document.getElementById('banner-close').addEventListener('click', () => { document.getElementById('banner').style.display = 'none'; });
 });
+
+// ─── IR AL PUNTO DESDE LA LISTA ───────────────────────────────
+function irAlPunto(id) {
+  const pt = allPuntos.find(p => String(p.id) === String(id));
+  if (!pt) return;
+  // Cerrar panel de lista
+  document.getElementById('list-panel').classList.remove('open');
+  document.getElementById('legend').style.display = 'flex';
+  // Centrar mapa y abrir popup
+  map.setView([pt.lat, pt.lng], 16);
+  const m = markers.find(mk => mk._puntoId === String(pt.id) || mk._puntoId === pt.id);
+  if (m) setTimeout(() => m.openPopup(), 300);
+}
 </script>
 </body>
 </html>
