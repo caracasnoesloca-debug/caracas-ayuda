@@ -429,6 +429,8 @@ function abrirFormularioDesdeSearch(lat, lng, nombre, direccion) {
   document.getElementById('submit-thanks').style.display = 'none';
   setTimeout(() => document.getElementById('f-nombre').focus(), 100);
 }
+
+function resetForm() {
   ['f-nombre','f-horario','f-telefono','f-descripcion','f-reportado','f-direccion'].forEach(id => document.getElementById(id).value = '');
   pendingLat = null; pendingLng = null;
   if (pickMarker) { map.removeLayer(pickMarker); pickMarker = null; }
