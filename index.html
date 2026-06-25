@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Caracas Ayuda — Mapa de recursos tras el terremoto</title>
+  <meta name="description" content="Mapa interactivo de centros de ayuda, refugios, hospitales y recursos disponibles para las personas afectadas por el terremoto en Venezuela." />
+  <meta property="og:title" content="Caracas Ayuda" />
+  <meta property="og:description" content="Encuentra centros de ayuda, refugios, hospitales y recursos disponibles tras el terremoto en Venezuela." />
+  <meta property="og:type" content="website" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #2563EB;
+      --blue-dark: #1d4ed8;
+      --blue-light: #eff6ff;
+      --blue-border: #bfdbfe;
+      --green: #16a34a;
+      --amber: #ca8a04;
+      --gray: #9ca3af;
+      --text: #111827;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+      --bg: #ffffff;
+      --bg-secondary: #f9fafb;
+      --radius: 8px;
+      --radius-lg: 12px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --text: #f9fafb;
+        --text-muted: #9ca3af;
+        --border: #374151;
+        --bg: #111827;
+        --bg-secondary: #1f2937;
+        --blue-light: #1e3a5f;
+        --blue-border: #1d4ed8;
+      }
+    }
+    html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); }
+    #app { display: flex; flex-direction: column; height: 100vh; }
+
+    /* TOPBAR */
+    #topbar { padding: 10px 16px 0; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 1000; flex-shrink: 0; }
+    #topbar-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    #logo-wrap svg { height: 26px; width: auto; flex-shrink: 0; fill: var(--text); }
+    #search-wrap { flex: 1; position: relative; }
+    #search-input { width: 100%; padding: 8px 12px 8px 34px; font-size: 14px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-secondary); color: var(--text); outline: none; }
+    #search-input:focus { border-color: var(--blue); }
+    #search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 16px; pointer-events: none; }
+    #btn-add { padding: 8px 16px; font-size: 13px; font-weight: 500; background: var(--blue); color: #fff; border: none; border-radius: var(--radius); cursor: pointer; white-space: nowrap; }
+    #btn-add:hover { background: var(--blue-dark); }
+
+    /* FILTERS */
+    #filters { display: flex; gap: 6px; padding-bottom: 10px; overflow-x: auto; scrollbar-width: none; }
+    #filters::-webkit-scrollbar { display: none; }
+    .filter-btn { padding: 5px 12px; font-size: 12px; border: 1px solid var(--border); border-radius: 20px; background: var(--bg); color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.12s; }
+    .filter-btn:hover { background: var(--bg-secondary); }
+    .filter-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+    /* BANNER */
+    #banner { padding: 9px 16px; background: var(--blue-light); border-bottom: 1px solid var(--blue-border); display: flex; align-items: flex-start; gap: 10px; flex-shrink: 0; }
+    #banner-text { font-size: 12px; color: #1e40af; line-height: 1.5; flex: 1; }
+    @media (prefers-color-scheme: dark) { #banner-text { color: #93c5fd; } }
+    #banner-text strong { font-weight: 600; }
+    #banner-close { background: none; border: none; font-size: 18px; color: #93c5fd; cursor: pointer; flex-shrink: 0; line-height: 1; }
+
+    /* MAP */
+    #map-container { flex: 1; position: relative; min-height: 0; }
+    #map { width: 100%; height: 100%; }
+
+    /* COUNTER */
+    #counter-badge { position: absolute; bottom: 28px; left: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 5px 12px; font-size: 12px; color: var(--text-muted); z-index: 999; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+    /* SIDE PANEL */
+    #side-panel { position: absolute; top: 10px; right: 10px; width: 290px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); z-index: 999; display: none; max-height: calc(100% - 20px); overflow-y: auto; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+    #side-panel.open { display: block; }
+    #panel-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--bg); }
+    #panel-title { font-size: 14px; font-weight: 600; }
+    #panel-close { background: none; border: none; cursor: pointer; font-size: 20px; color: var(--text-muted); line-height: 1; }
+    #panel-body { padding: 16px; }
+    .form-label { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px; margin-top: 12px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 500; }
+    .form-label:first-child { margin-top: 0; }
+    .form-input { width: 100%; font-size: 13px; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-secondary); color: var(--text); outline: none; font-family: inherit; }
+    .form-input:focus { border-color: var(--blue); }
+    textarea.form-input { height: 70px; resize: none; }
+    #submit-btn { margin-top: 16px; width: 100%; padding: 10px; font-size: 14px; font-weight: 600; background: var(--blue); color: #fff; border: none; border-radius: var(--radius); cursor: pointer; font-family: inherit; }
+    #submit-btn:hover { background: var(--blue-dark); }
+    #submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    #submit-thanks { display: none; text-align: center; padding: 28px 0; }
+    #submit-thanks .thanks-icon { font-size: 36px; }
+    #submit-thanks p { font-size: 13px; color: var(--text-muted); margin-top: 10px; line-height: 1.6; }
+
+    /* DISCLAIMER */
+    #disclaimer { padding: 5px 16px; font-size: 11px; color: var(--text-muted); background: var(--bg-secondary); border-top: 1px solid var(--border); text-align: center; flex-shrink: 0; }
+
+    /* POPUP */
+    .popup-card { font-family: -apple-system, sans-serif; min-width: 220px; max-width: 260px; }
+    .popup-name { font-size: 14px; font-weight: 600; color: #111; margin-bottom: 3px; }
+    .popup-type { font-size: 11px; color: #666; margin-bottom: 6px; }
+    .popup-status { display: inline-block; padding: 2px 9px; border-radius: 10px; font-size: 11px; font-weight: 500; margin-bottom: 8px; }
+    .status-verified { background: #dcfce7; color: #166534; }
+    .status-pending  { background: #fef9c3; color: #854d0e; }
+    .status-old      { background: #f3f4f6; color: #6b7280; }
+    .popup-row { font-size: 12px; color: #444; margin-bottom: 3px; line-height: 1.4; }
+    .popup-needs { font-size: 12px; color: #444; margin-top: 6px; padding-top: 6px; border-top: 1px solid #eee; }
+    .popup-btn { display: block; width: 100%; padding: 7px; font-size: 12px; font-weight: 600; background: var(--blue, #2563EB); color: #fff; border: none; border-radius: 6px; cursor: pointer; text-align: center; margin-top: 10px; text-decoration: none; }
+
+    /* LOADING */
+    #loading { position: absolute; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 2000; }
+    #loading svg { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading p { font-size: 14px; color: var(--text-muted); }
+
+    /* MOBILE */
+    @media (max-width: 600px) {
+      #topbar-top { flex-wrap: wrap; }
+      #logo-wrap { order: 1; }
+      #btn-add { order: 2; }
+      #search-wrap { order: 3; flex: 1 1 100%; }
+      #side-panel { width: calc(100% - 20px); }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <div id="topbar-top">
+      <div id="logo-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1427.67 250">
+          <g><g><path d="M150.8,32.16h0l-1.72,3.93c-4.91-3.44-11.42-5.77-20.75-5.77-24.8,0-41.87,18.3-41.87,44.82,0,1.48.06,2.92.17,4.34,2.77-1.21,5.89-1.46,8.88-1.7,2.04-.16,4.05-.31,6.1-.21,1.1.05,2.21.16,3.3.29-.03-.9-.04-1.8-.04-2.72,0-22.23,6.88-38.19,24.93-38.19,12.16,0,22.1,8.23,28.61,20.75l3.93-1.23-11.54-24.31Z"/><path d="M105.42,85.11c-.14-1.19-.26-2.41-.34-3.65-2.94-.27-5.89-.32-8.84-.22-2.99.1-6.67.3-9.19,2.16.3,2.04.71,4.01,1.22,5.92,4.99-3.26,11.2-4.68,17.15-4.21Z"/><path d="M157.55,92.7c-3.56,11.79-14.24,20.63-27.75,20.63s-20.88-9.18-23.62-23.18c-1.19-.2-2.39-.34-3.6-.33-1.61.01-3.2.32-4.77.64-2.84.59-5.9,1.44-8.03,3.51,6.1,15.95,20.19,25.98,38.54,25.98s30.45-9.58,35.98-24.93l-6.75-2.33Z"/></g><g><path d="M131.51,106.47c.31,0,.61,0,.92-.03.16,0,.32-.03.47-.04.03,0,.05,0,.07,0,.06,0,.11-.02.17-.03.31-.05.61-.12.91-.21.13-.04.26-.09.39-.14.02,0,.03-.01.05-.02,0,0,.02,0,.04-.02.06-.03.13-.06.19-.09.05-.03.09-.05.14-.07l-11.36-23.67h0l-1.72,3.93c-4.91-3.44-11.42-5.77-20.75-5.77-24.8,0-41.87,18.3-41.87,44.82,0,24.74,14.86,42.31,37,44.56-2.04-2.24-3.03-5.3-3.49-8.38-10.76-4.95-15.09-18.67-15.09-36.18,0-22.23,6.88-38.19,24.93-38.19,11.75,0,21.43,7.69,27.94,19.51.36,0,.72.02,1.08.02Z"/><path d="M129.85,143.92s0,0-.01,0c-1.98,5.64-5.61,10.53-10.39,13.99,2.29,1.5,5.11,2.39,7.85,2.67,4.15-3.96,7.28-9.05,9.51-15.04-2.21-.9-4.47-1.59-6.95-1.61Z"/><path d="M116.38,159.84c-4.07,2.22-8.78,3.48-13.89,3.48-2.22,0-4.28-.25-6.17-.72.87,2.91,2.33,5.77,4.88,7.34,9.67-.03,17.33-2.52,23.25-6.96-2.95-.49-5.85-1.27-8.07-3.15Z"/></g><path d="M165.16,192.55c0,16.58-15.1,27.75-34.87,27.75-10.31,0-19.4-2.58-26.03-6.39l-1.96,4.54h-4.79l-3.56-28.24h0c7.24,14.49,20.38,23.45,35.61,23.45,10.93,0,19.65-6.39,19.52-15.1,0-10.56-10.93-13.88-25.05-17.68-14.37-4.18-29.84-8.96-29.84-26.28,0-14.74,13.88-23.95,30.58-23.95,10.93,0,18.54,2.58,23.7,5.77l1.72-3.93h4.79l3.07,25.42h0c-6.14-12.89-17.07-20.63-31.93-20.63-10.44,0-16.45,5.28-16.45,12.16,0,9.21,10.31,12.03,23.45,15.6,15.23,4.17,32.05,8.84,32.05,27.51Z"/><polygon points="160.55 61.09 163.04 70.94 172.29 66.75 166.15 74.83 175.19 79.45 165.04 79.68 167.07 89.63 160.55 81.84 154.04 89.63 156.07 79.68 145.92 79.45 154.96 74.83 148.82 66.75 158.07 70.94 160.55 61.09"/><path d="M125,250C56.08,250,0,193.92,0,125S56.08,0,125,0s125,56.08,125,125-56.08,125-125,125ZM125,17.74c-59.15,0-107.26,48.12-107.26,107.26s48.12,107.26,107.26,107.26,107.26-48.12,107.26-107.26S184.15,17.74,125,17.74Z"/></g>
+          <g><path d="M401.23,139.95c-4.36,23.53-20.57,39.12-44.57,39.12-27.12,0-47.85-18.55-47.85-54.08s18.55-56.42,48.16-56.42c25.87,0,42.24,16.52,44.26,37.4h-21.66c-2.96-11.69-12.16-18.7-22.44-18.7-17.92,0-26.34,13.87-26.34,36.47s8.42,36.47,25.25,36.47c12.78,0,20.57-7.33,23.53-20.26h21.66Z"/><path d="M470.43,175.48l-6.55-21.35h-38.18l-7.33,21.35h-22.91l36.94-103.49h25.09l36.47,103.49h-23.53ZM444.72,95.22h-.16l-13.25,41.15h26.34l-12.94-41.15Z"/><path d="M559.11,175.48v-26.65c0-9.97-3.74-13.87-16.21-13.87h-23.07v40.52h-21.04v-103.49h52.52c19.17,0,31.79,12.78,31.79,29.92,0,11.07-5.46,20.42-15.43,24,9.2,2.96,12.62,8.1,12.62,20.26v29.3h-21.2ZM519.84,89.92v27.59h27.12c11.53,0,15.9-5.77,15.9-13.71s-4.36-13.87-15.12-13.87h-27.9Z"/><path d="M660.73,175.48l-6.55-21.35h-38.18l-7.33,21.35h-22.91l36.94-103.49h25.09l36.47,103.49h-23.53ZM635.01,95.22h-.16l-13.25,41.15h26.34l-12.94-41.15Z"/><path d="M769.35,139.95c-4.36,23.53-20.57,39.12-44.57,39.12-27.12,0-47.85-18.55-47.85-54.08s18.55-56.42,48.16-56.42c25.87,0,42.24,16.52,44.26,37.4h-21.66c-2.96-11.69-12.16-18.7-22.44-18.7-17.92,0-26.34,13.87-26.34,36.47s8.42,36.47,25.25,36.47c12.78,0,20.57-7.33,23.53-20.26h21.66Z"/><path d="M838.55,175.48l-6.55-21.35h-38.18l-7.33,21.35h-22.91l36.94-103.49h25.09l36.47,103.49h-23.53ZM812.84,95.22h-.16l-13.25,41.15h26.34l-12.94-41.15Z"/><path d="M920.69,102.54c-1.09-10.6-7.48-15.74-20.57-15.74-12.16,0-18.55,4.36-18.55,12.16,0,6.55,4.52,10.29,16.05,13.09,11.69,2.81,23.07,5.61,30.7,9.04,9.04,4.05,16.21,10.44,16.21,25.09,0,22.75-17.14,32.89-41.3,32.89-25.56,0-43.33-11.38-43.79-34.6h20.88c.31,10.6,9.2,17.14,23.07,17.14,12.78,0,20.11-5.46,20.11-14.65,0-6.08-3.12-10.29-16.05-13.09-12.78-2.8-21.04-4.67-28.37-7.95-11.07-4.99-17.3-12.47-17.3-25.56,0-18.55,12.62-31.79,37.87-31.79s40.83,14.18,41.61,33.98h-20.57Z"/><path d="M1059.24,175.48l-6.55-21.35h-38.18l-7.33,21.35h-22.91l36.94-103.49h25.09l36.47,103.49h-23.53ZM1033.52,95.22h-.16l-13.25,41.15h26.34l-12.94-41.15Z"/><path d="M1096.48,175.48v-39.12l-35.85-64.37h25.25l21.82,42.08,20.11-42.08h24.94l-34.6,64.68v38.81h-21.66Z"/><path d="M1218.83,72h22.13v69.04c0,25.09-15.43,38.03-42.55,38.03-25.09,0-40.83-11.84-40.83-36.78v-70.29h21.97v68.26c0,12.78,6.86,20.88,18.55,20.88,13.87,0,20.73-6.55,20.73-20.1v-69.04Z"/><path d="M1248.91,175.48v-103.49h40.05c28.05,0,48,19.17,48,50.65s-17.92,52.83-44.73,52.83h-43.33ZM1287.87,157.87c18.86,0,26.96-11.84,26.96-35.22s-8.1-32.73-28.83-32.73h-16.05v67.95h17.92Z"/><path d="M1404.13,175.48l-6.55-21.35h-38.18l-7.33,21.35h-22.91l36.94-103.49h25.09l36.47,103.49h-23.53ZM1378.42,95.22h-.16l-13.25,41.15h26.34l-12.94-41.15Z"/></g>
+        </svg>
+      </div>
+      <div id="search-wrap">
+        <span id="search-icon">🔍</span>
+        <input id="search-input" type="text" placeholder="Buscar punto de ayuda..." autocomplete="off" />
+      </div>
+      <button id="btn-add">+ Agregar</button>
+    </div>
+    <div id="filters">
+      <button class="filter-btn active" data-cat="todos">Todos</button>
+      <button class="filter-btn" data-cat="agua">💧 Agua</button>
+      <button class="filter-btn" data-cat="comida">🍲 Comida</button>
+      <button class="filter-btn" data-cat="refugio">🏠 Refugio</button>
+      <button class="filter-btn" data-cat="medico">🏥 Atención médica</button>
+      <button class="filter-btn" data-cat="medicamentos">💊 Medicamentos</button>
+      <button class="filter-btn" data-cat="carga">🔋 Carga / internet</button>
+      <button class="filter-btn" data-cat="mascotas">🐶 Mascotas</button>
+      <button class="filter-btn" data-cat="combustible">⛽ Combustible</button>
+    </div>
+  </div>
+
+  <div id="banner">
+    <div id="banner-text">
+      ℹ️ &nbsp;<strong>¿Necesitas ayuda o conoces un punto de apoyo?</strong> Este mapa reúne centros de agua, comida, refugio y atención médica disponibles tras el terremoto. La información es actualizada por voluntarios — verifica antes de desplazarte. Creado sin fines de lucro por <strong>Caracas Merch</strong>.
+    </div>
+    <button id="banner-close" aria-label="Cerrar">×</button>
+  </div>
+
+  <div id="map-container">
+    <div id="loading">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+      <p>Cargando puntos de ayuda...</p>
+    </div>
+    <div id="map"></div>
+    <div id="counter-badge">Cargando...</div>
+
+    <div id="side-panel">
+      <div id="panel-header">
+        <span id="panel-title">Agregar punto de ayuda</span>
+        <button id="panel-close">×</button>
+      </div>
+      <div id="panel-body">
+        <div id="form-section">
+          <label class="form-label">Nombre del punto *</label>
+          <input class="form-input" id="f-nombre" type="text" placeholder="Ej. Acopio Parroquia San Juan" />
+          <label class="form-label">Categoría *</label>
+          <select class="form-input" id="f-categoria">
+            <option value="agua">💧 Agua potable</option>
+            <option value="comida">🍲 Comida / alimentos</option>
+            <option value="refugio">🏠 Refugio / albergue</option>
+            <option value="medico">🏥 Atención médica</option>
+            <option value="medicamentos">💊 Medicamentos</option>
+            <option value="carga">🔋 Carga eléctrica / internet</option>
+            <option value="mascotas">🐶 Ayuda para mascotas</option>
+            <option value="combustible">⛽ Combustible</option>
+          </select>
+          <label class="form-label">Dirección *</label>
+          <input class="form-input" id="f-direccion" type="text" placeholder="Dirección completa" />
+          <label class="form-label">Horario</label>
+          <input class="form-input" id="f-horario" type="text" placeholder="Ej. Lun–Dom 8am–6pm" />
+          <label class="form-label">Teléfono (opcional)</label>
+          <input class="form-input" id="f-telefono" type="text" placeholder="0412-000-0000" />
+          <label class="form-label">Qué ofrecen / descripción</label>
+          <textarea class="form-input" id="f-descripcion" placeholder="Ej. Agua embotellada, comida enlatada..."></textarea>
+          <label class="form-label">Tu nombre (opcional)</label>
+          <input class="form-input" id="f-reportado" type="text" placeholder="Quien reporta" />
+          <button id="submit-btn">Enviar información</button>
+        </div>
+        <div id="submit-thanks">
+          <div class="thanks-icon">✅</div>
+          <p><strong>Gracias por ayudar.</strong><br>Nuestro equipo revisará la información antes de publicarla.</p>
+          <button onclick="resetForm()" style="margin-top:16px;padding:8px 20px;background:var(--blue);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;">Agregar otro punto</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="disclaimer">
+    Plataforma sin fines de lucro por Caracas Merch · No representa ninguna entidad gubernamental · Información sujeta a cambios · <a href="admin.html" style="color:inherit;opacity:0.5">Admin</a>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://zxpfumbsxgnfzxjlhocu.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_bx7plOxEb3M4aNID_stt-g_WPh-FS88';
+  const { createClient } = supabase;
+  const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const cats = {
+    agua:         { label: 'Agua potable',       icon: '💧' },
+    comida:       { label: 'Comida / alimentos', icon: '🍲' },
+    refugio:      { label: 'Refugio',            icon: '🏠' },
+    medico:       { label: 'Atención médica',    icon: '🏥' },
+    medicamentos: { label: 'Medicamentos',       icon: '💊' },
+    carga:        { label: 'Carga / internet',   icon: '🔋' },
+    mascotas:     { label: 'Mascotas',           icon: '🐶' },
+    combustible:  { label: 'Combustible',        icon: '⛽' },
+  };
+
+  let map, markers = [], allPuntos = [], activeFilter = 'todos';
+
+  function markerColor(estado) {
+    return estado === 'verified' ? '#16a34a' : estado === 'pending' ? '#ca8a04' : '#9ca3af';
+  }
+
+  function createIcon(pt) {
+    const color = markerColor(pt.estado);
+    const emoji = cats[pt.categoria]?.icon || '📍';
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="34" height="40" viewBox="0 0 34 40">
+      <path d="M17 0C7.6 0 0 7.6 0 17c0 12.75 17 23 17 23S34 29.75 34 17C34 7.6 26.4 0 17 0z" fill="${color}"/>
+      <circle cx="17" cy="17" r="11" fill="white"/>
+      <text x="17" y="22" text-anchor="middle" font-size="13">${emoji}</text>
+    </svg>`;
+    return L.divIcon({ html: svg, className: '', iconSize: [34, 40], iconAnchor: [17, 40], popupAnchor: [0, -42] });
+  }
+
+  function statusBadge(estado) {
+    if (estado === 'verified') return '<span class="popup-status status-verified">🟢 Verificado</span>';
+    if (estado === 'pending')  return '<span class="popup-status status-pending">🟡 Por verificar</span>';
+    return '<span class="popup-status status-old">⚪ Sin actualizar</span>';
+  }
+
+  function renderMarkers() {
+    markers.forEach(m => map.removeLayer(m));
+    markers = [];
+    const q = document.getElementById('search-input').value.toLowerCase();
+    const filtered = allPuntos.filter(p => {
+      const catOk = activeFilter === 'todos' || p.categoria === activeFilter;
+      const qOk = !q || p.nombre.toLowerCase().includes(q) || (p.descripcion || '').toLowerCase().includes(q) || (p.direccion || '').toLowerCase().includes(q);
+      return catOk && qOk;
+    });
+    document.getElementById('counter-badge').textContent = `${filtered.length} punto${filtered.length !== 1 ? 's' : ''} activo${filtered.length !== 1 ? 's' : ''}`;
+    filtered.forEach(pt => {
+      const ci = cats[pt.categoria] || {};
+      const m = L.marker([pt.lat, pt.lng], { icon: createIcon(pt) });
+      m.bindPopup(`<div class="popup-card">
+        <div class="popup-name">${ci.icon || ''} ${pt.nombre}</div>
+        <div class="popup-type">${ci.label || pt.categoria}</div>
+        ${statusBadge(pt.estado)}
+        ${pt.direccion  ? `<div class="popup-row">📍 ${pt.direccion}</div>`  : ''}
+        ${pt.horario    ? `<div class="popup-row">🕐 ${pt.horario}</div>`    : ''}
+        ${pt.telefono   ? `<div class="popup-row">📞 ${pt.telefono}</div>`   : ''}
+        ${pt.descripcion ? `<div class="popup-row" style="margin-top:5px">${pt.descripcion}</div>` : ''}
+        ${pt.necesitan || pt.ofrecen ? `<div class="popup-needs">
+          ${pt.necesitan ? `<div><strong>Necesitan:</strong> ${pt.necesitan}</div>` : ''}
+          ${pt.ofrecen   ? `<div><strong>Ofrecen:</strong> ${pt.ofrecen}</div>`     : ''}
+        </div>` : ''}
+        <a class="popup-btn" href="https://maps.google.com/?q=${pt.lat},${pt.lng}" target="_blank">Cómo llegar →</a>
+      </div>`, { maxWidth: 280 });
+      m.addTo(map);
+      markers.push(m);
+    });
+  }
+
+  async function loadPuntos() {
+    const { data, error } = await db.from('puntos').select('*').order('created_at', { ascending: false });
+    if (error) { console.error(error); return; }
+    allPuntos = data || [];
+    document.getElementById('loading').style.display = 'none';
+    renderMarkers();
+  }
+
+  async function submitForm() {
+    const nombre = document.getElementById('f-nombre').value.trim();
+    const categoria = document.getElementById('f-categoria').value;
+    const direccion = document.getElementById('f-direccion').value.trim();
+    if (!nombre || !direccion) { alert('Por favor completa nombre y dirección.'); return; }
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+    const { error } = await db.from('submissions').insert({
+      nombre,
+      categoria,
+      direccion,
+      horario:       document.getElementById('f-horario').value.trim(),
+      telefono:      document.getElementById('f-telefono').value.trim(),
+      descripcion:   document.getElementById('f-descripcion').value.trim(),
+      reportado_por: document.getElementById('f-reportado').value.trim(),
+    });
+    if (error) {
+      alert('Hubo un error al enviar. Intenta de nuevo.');
+      btn.disabled = false;
+      btn.textContent = 'Enviar información';
+      return;
+    }
+    document.getElementById('form-section').style.display = 'none';
+    document.getElementById('submit-thanks').style.display = 'block';
+  }
+
+  function resetForm() {
+    ['f-nombre','f-horario','f-telefono','f-descripcion','f-reportado'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('form-section').style.display = 'block';
+    document.getElementById('submit-thanks').style.display = 'none';
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = false;
+    btn.textContent = 'Enviar información';
+  }
+
+  window.addEventListener('load', () => {
+    map = L.map('map', { zoomControl: true }).setView([10.49, -66.90], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors', maxZoom: 19
+    }).addTo(map);
+
+    loadPuntos();
+
+    // Realtime updates
+    db.channel('puntos-changes').on('postgres_changes', { event: '*', schema: 'public', table: 'puntos' }, () => loadPuntos()).subscribe();
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        activeFilter = this.dataset.cat;
+        renderMarkers();
+      });
+    });
+
+    document.getElementById('search-input').addEventListener('input', renderMarkers);
+
+    document.getElementById('btn-add').addEventListener('click', () => {
+      const p = document.getElementById('side-panel');
+      p.classList.toggle('open');
+    });
+    document.getElementById('panel-close').addEventListener('click', () => {
+      document.getElementById('side-panel').classList.remove('open');
+    });
+    document.getElementById('submit-btn').addEventListener('click', submitForm);
+    document.getElementById('banner-close').addEventListener('click', () => {
+      document.getElementById('banner').style.display = 'none';
+    });
+  });
+</script>
+</body>
+</html>

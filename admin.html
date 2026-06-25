@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Caracas Ayuda — Panel de Administración</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #2563EB; --blue-dark: #1d4ed8;
+      --green: #16a34a; --green-light: #dcfce7; --green-text: #166534;
+      --amber: #ca8a04; --amber-light: #fef9c3; --amber-text: #854d0e;
+      --red: #dc2626; --red-light: #fee2e2; --red-text: #991b1b;
+      --text: #111827; --text-muted: #6b7280;
+      --border: #e5e7eb; --bg: #ffffff; --bg-secondary: #f9fafb;
+      --radius: 8px; --radius-lg: 12px;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg-secondary); color: var(--text); min-height: 100vh; }
+
+    /* LOGIN */
+    #login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+    #login-box { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; width: 100%; max-width: 360px; text-align: center; }
+    #login-box svg { height: 32px; width: auto; margin-bottom: 20px; fill: var(--text); }
+    #login-box h2 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    #login-box p { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+    #login-box input { width: 100%; padding: 9px 12px; font-size: 14px; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; outline: none; font-family: inherit; }
+    #login-box input:focus { border-color: var(--blue); }
+    #login-btn { width: 100%; padding: 10px; font-size: 14px; font-weight: 600; background: var(--blue); color: #fff; border: none; border-radius: var(--radius); cursor: pointer; font-family: inherit; }
+    #login-btn:hover { background: var(--blue-dark); }
+    #login-error { color: var(--red); font-size: 12px; margin-top: 8px; display: none; }
+
+    /* ADMIN */
+    #admin-screen { display: none; }
+    #admin-header { background: var(--bg); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    #admin-header svg { height: 22px; width: auto; fill: var(--text); }
+    #admin-header-right { display: flex; align-items: center; gap: 12px; }
+    #admin-badge { background: var(--blue-light, #eff6ff); color: var(--blue); padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+    #logout-btn { font-size: 13px; color: var(--text-muted); background: none; border: none; cursor: pointer; }
+
+    #admin-body { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
+    #admin-tabs { display: flex; gap: 4px; margin-bottom: 20px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 4px; width: fit-content; }
+    .tab-btn { padding: 6px 16px; font-size: 13px; font-weight: 500; border: none; border-radius: 6px; cursor: pointer; background: none; color: var(--text-muted); font-family: inherit; transition: all 0.1s; }
+    .tab-btn.active { background: var(--blue); color: #fff; }
+
+    #stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .stat-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+    .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+    .stat-value { font-size: 24px; font-weight: 600; }
+
+    .section-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+    .card-list { display: flex; flex-direction: column; gap: 10px; }
+    .item-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; }
+    .item-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .item-name { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+    .item-meta { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+    .item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .btn-sm { padding: 5px 12px; font-size: 12px; font-weight: 500; border: none; border-radius: 6px; cursor: pointer; font-family: inherit; }
+    .btn-green  { background: var(--green-light);  color: var(--green-text); }
+    .btn-amber  { background: var(--amber-light);  color: var(--amber-text); }
+    .btn-red    { background: var(--red-light);    color: var(--red-text); }
+    .btn-blue   { background: #eff6ff; color: var(--blue); }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; margin-bottom: 6px; }
+    .badge-verified { background: var(--green-light); color: var(--green-text); }
+    .badge-pending  { background: var(--amber-light); color: var(--amber-text); }
+    .badge-old      { background: #f3f4f6; color: var(--text-muted); }
+    .empty-state { text-align: center; padding: 40px; color: var(--text-muted); font-size: 14px; }
+    #loading-admin { text-align: center; padding: 60px; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div id="login-box">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 250">
+      <g><g><path d="M150.8,32.16h0l-1.72,3.93c-4.91-3.44-11.42-5.77-20.75-5.77-24.8,0-41.87,18.3-41.87,44.82,0,1.48.06,2.92.17,4.34,2.77-1.21,5.89-1.46,8.88-1.7,2.04-.16,4.05-.31,6.1-.21,1.1.05,2.21.16,3.3.29-.03-.9-.04-1.8-.04-2.72,0-22.23,6.88-38.19,24.93-38.19,12.16,0,22.1,8.23,28.61,20.75l3.93-1.23-11.54-24.31Z"/><path d="M105.42,85.11c-.14-1.19-.26-2.41-.34-3.65-2.94-.27-5.89-.32-8.84-.22-2.99.1-6.67.3-9.19,2.16.3,2.04.71,4.01,1.22,5.92,4.99-3.26,11.2-4.68,17.15-4.21Z"/><path d="M157.55,92.7c-3.56,11.79-14.24,20.63-27.75,20.63s-20.88-9.18-23.62-23.18c-1.19-.2-2.39-.34-3.6-.33-1.61.01-3.2.32-4.77.64-2.84.59-5.9,1.44-8.03,3.51,6.1,15.95,20.19,25.98,38.54,25.98s30.45-9.58,35.98-24.93l-6.75-2.33Z"/></g><path d="M125,250C56.08,250,0,193.92,0,125S56.08,0,125,0s125,56.08,125,125-56.08,125-125,125ZM125,17.74c-59.15,0-107.26,48.12-107.26,107.26s48.12,107.26,107.26,107.26,107.26-48.12,107.26-107.26S184.15,17.74,125,17.74Z"/></g>
+    </svg>
+    <h2>Panel de Administración</h2>
+    <p>Caracas Ayuda</p>
+    <input type="email" id="admin-email" placeholder="Email" />
+    <input type="password" id="admin-pass" placeholder="Contraseña" />
+    <button id="login-btn">Entrar</button>
+    <p id="login-error">Email o contraseña incorrectos.</p>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin-screen">
+  <div id="admin-header">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1427.67 250">
+      <g><g><path d="M150.8,32.16h0l-1.72,3.93c-4.91-3.44-11.42-5.77-20.75-5.77-24.8,0-41.87,18.3-41.87,44.82,0,1.48.06,2.92.17,4.34,2.77-1.21,5.89-1.46,8.88-1.7,2.04-.16,4.05-.31,6.1-.21,1.1.05,2.21.16,3.3.29-.03-.9-.04-1.8-.04-2.72,0-22.23,6.88-38.19,24.93-38.19,12.16,0,22.1,8.23,28.61,20.75l3.93-1.23-11.54-24.31Z"/><path d="M125,250C56.08,250,0,193.92,0,125S56.08,0,125,0s125,56.08,125,125-56.08,125-125,125ZM125,17.74c-59.15,0-107.26,48.12-107.26,107.26s48.12,107.26,107.26,107.26,107.26-48.12,107.26-107.26S184.15,17.74,125,17.74Z"/></g>
+      <g><path d="M401.23,139.95c-4.36,23.53-20.57,39.12-44.57,39.12-27.12,0-47.85-18.55-47.85-54.08s18.55-56.42,48.16-56.42c25.87,0,42.24,16.52,44.26,37.4h-21.66c-2.96-11.69-12.16-18.7-22.44-18.7-17.92,0-26.34,13.87-26.34,36.47s8.42,36.47,25.25,36.47c12.78,0,20.57-7.33,23.53-20.26h21.66Z"/><path d="M470.43,175.48l-6.55-21.35h-38.18l-7.33,21.35h-22.91l36.94-103.49h25.09l36.47,103.49h-23.53Z"/><path d="M920.69,102.54c-1.09-10.6-7.48-15.74-20.57-15.74-12.16,0-18.55,4.36-18.55,12.16,0,6.55,4.52,10.29,16.05,13.09,11.69,2.81,23.07,5.61,30.7,9.04,9.04,4.05,16.21,10.44,16.21,25.09,0,22.75-17.14,32.89-41.3,32.89-25.56,0-43.33-11.38-43.79-34.6h20.88c.31,10.6,9.2,17.14,23.07,17.14,12.78,0,20.11-5.46,20.11-14.65,0-6.08-3.12-10.29-16.05-13.09-12.78-2.8-21.04-4.67-28.37-7.95-11.07-4.99-17.3-12.47-17.3-25.56,0-18.55,12.62-31.79,37.87-31.79s40.83,14.18,41.61,33.98h-20.57Z"/></g></g>
+    </svg>
+    <div id="admin-header-right">
+      <span id="admin-badge">Admin</span>
+      <button id="logout-btn">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <div id="admin-body">
+    <div id="stats-row">
+      <div class="stat-card"><div class="stat-label">Total puntos</div><div class="stat-value" id="stat-total">—</div></div>
+      <div class="stat-card"><div class="stat-label">Verificados</div><div class="stat-value" id="stat-verified" style="color:var(--green)">—</div></div>
+      <div class="stat-card"><div class="stat-label">Por verificar</div><div class="stat-value" id="stat-pending" style="color:var(--amber)">—</div></div>
+      <div class="stat-card"><div class="stat-label">Submissions</div><div class="stat-value" id="stat-submissions" style="color:var(--blue)">—</div></div>
+    </div>
+
+    <div id="admin-tabs">
+      <button class="tab-btn active" data-tab="submissions">📥 Submissions pendientes</button>
+      <button class="tab-btn" data-tab="puntos">🗺️ Puntos del mapa</button>
+    </div>
+
+    <div id="tab-submissions">
+      <div class="section-title">Submissions de usuarios — pendientes de revisión</div>
+      <div class="card-list" id="list-submissions"><div class="empty-state">Cargando...</div></div>
+    </div>
+
+    <div id="tab-puntos" style="display:none">
+      <div class="section-title">Todos los puntos en el mapa</div>
+      <div class="card-list" id="list-puntos"><div class="empty-state">Cargando...</div></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://zxpfumbsxgnfzxjlhocu.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_bx7plOxEb3M4aNID_stt-g_WPh-FS88';
+  const { createClient } = supabase;
+  const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const cats = { agua:'💧', comida:'🍲', refugio:'🏠', medico:'🏥', medicamentos:'💊', carga:'🔋', mascotas:'🐶', combustible:'⛽' };
+
+  // AUTH
+  document.getElementById('login-btn').addEventListener('click', async () => {
+    const email = document.getElementById('admin-email').value.trim();
+    const pass  = document.getElementById('admin-pass').value;
+    const { error } = await db.auth.signInWithPassword({ email, password: pass });
+    if (error) {
+      document.getElementById('login-error').style.display = 'block';
+    } else {
+      showAdmin();
+    }
+  });
+
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await db.auth.signOut();
+    location.reload();
+  });
+
+  db.auth.onAuthStateChange((event, session) => {
+    if (session) showAdmin();
+  });
+
+  function showAdmin() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-screen').style.display = 'block';
+    loadAll();
+  }
+
+  // TABS
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      document.getElementById('tab-submissions').style.display = this.dataset.tab === 'submissions' ? 'block' : 'none';
+      document.getElementById('tab-puntos').style.display      = this.dataset.tab === 'puntos'      ? 'block' : 'none';
+    });
+  });
+
+  async function loadAll() {
+    const [{ data: puntos }, { data: subs }] = await Promise.all([
+      db.from('puntos').select('*').order('created_at', { ascending: false }),
+      db.from('submissions').select('*').where ? db.from('submissions').select('*').eq('revisado', false).order('created_at', { ascending: false }) : db.from('submissions').select('*').eq('revisado', false).order('created_at', { ascending: false }),
+    ]);
+
+    const verified = (puntos || []).filter(p => p.estado === 'verified').length;
+    const pending  = (puntos || []).filter(p => p.estado === 'pending').length;
+    document.getElementById('stat-total').textContent       = (puntos || []).length;
+    document.getElementById('stat-verified').textContent    = verified;
+    document.getElementById('stat-pending').textContent     = pending;
+    document.getElementById('stat-submissions').textContent = (subs || []).length;
+
+    renderSubmissions(subs || []);
+    renderPuntos(puntos || []);
+  }
+
+  function renderSubmissions(subs) {
+    const el = document.getElementById('list-submissions');
+    if (!subs.length) { el.innerHTML = '<div class="empty-state">✅ No hay submissions pendientes.</div>'; return; }
+    el.innerHTML = subs.map(s => `
+      <div class="item-card" id="sub-${s.id}">
+        <div class="item-top">
+          <div>
+            <div class="item-name">${cats[s.categoria] || '📍'} ${s.nombre}</div>
+            <div class="item-meta">
+              ${s.direccion ? `📍 ${s.direccion}<br>` : ''}
+              ${s.horario   ? `🕐 ${s.horario}<br>`   : ''}
+              ${s.telefono  ? `📞 ${s.telefono}<br>`  : ''}
+              ${s.descripcion ? `${s.descripcion}<br>` : ''}
+              ${s.reportado_por ? `Reportado por: ${s.reportado_por}<br>` : ''}
+              <span style="opacity:0.6">${new Date(s.created_at).toLocaleString('es-VE')}</span>
+            </div>
+          </div>
+          <div class="item-actions">
+            <button class="btn-sm btn-green" onclick="aprobarSubmission('${s.id}', ${JSON.stringify(s).replace(/"/g, '&quot;')})">✓ Aprobar</button>
+            <button class="btn-sm btn-red"   onclick="rechazarSubmission('${s.id}')">✗ Rechazar</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderPuntos(puntos) {
+    const el = document.getElementById('list-puntos');
+    if (!puntos.length) { el.innerHTML = '<div class="empty-state">No hay puntos.</div>'; return; }
+    el.innerHTML = puntos.map(p => `
+      <div class="item-card" id="punto-${p.id}">
+        <div class="item-top">
+          <div>
+            <span class="badge badge-${p.estado}">${p.estado === 'verified' ? '🟢 Verificado' : p.estado === 'pending' ? '🟡 Por verificar' : '⚪ Antiguo'}</span>
+            <div class="item-name">${cats[p.categoria] || '📍'} ${p.nombre}</div>
+            <div class="item-meta">
+              ${p.direccion ? `📍 ${p.direccion}<br>` : ''}
+              ${p.horario   ? `🕐 ${p.horario}<br>`   : ''}
+              ${p.descripcion ? `${p.descripcion}` : ''}
+            </div>
+          </div>
+          <div class="item-actions" style="flex-direction:column">
+            ${p.estado !== 'verified' ? `<button class="btn-sm btn-green" onclick="cambiarEstado('${p.id}','verified')">✓ Verificar</button>` : ''}
+            ${p.estado !== 'pending'  ? `<button class="btn-sm btn-amber" onclick="cambiarEstado('${p.id}','pending')">Pendiente</button>` : ''}
+            <button class="btn-sm btn-red" onclick="eliminarPunto('${p.id}')">✗ Eliminar</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function aprobarSubmission(subId, sub) {
+    const { error } = await db.from('puntos').insert({
+      nombre:        sub.nombre,
+      categoria:     sub.categoria,
+      lat:           10.49,
+      lng:           -66.90,
+      direccion:     sub.direccion,
+      horario:       sub.horario,
+      telefono:      sub.telefono,
+      descripcion:   sub.descripcion,
+      reportado_por: sub.reportado_por,
+      estado:        'pending',
+    });
+    if (!error) {
+      await db.from('submissions').update({ revisado: true }).eq('id', subId);
+      document.getElementById(`sub-${subId}`)?.remove();
+      const stat = document.getElementById('stat-submissions');
+      stat.textContent = Math.max(0, parseInt(stat.textContent) - 1);
+      alert('✅ Punto agregado como "pendiente de verificar". Actualiza las coordenadas desde la tabla.');
+    }
+  }
+
+  async function rechazarSubmission(subId) {
+    if (!confirm('¿Rechazar esta submission?')) return;
+    await db.from('submissions').update({ revisado: true }).eq('id', subId);
+    document.getElementById(`sub-${subId}`)?.remove();
+    const stat = document.getElementById('stat-submissions');
+    stat.textContent = Math.max(0, parseInt(stat.textContent) - 1);
+  }
+
+  async function cambiarEstado(id, estado) {
+    await db.from('puntos').update({ estado }).eq('id', id);
+    loadAll();
+  }
+
+  async function eliminarPunto(id) {
+    if (!confirm('¿Eliminar este punto del mapa?')) return;
+    await db.from('puntos').delete().eq('id', id);
+    document.getElementById(`punto-${id}`)?.remove();
+  }
+</script>
+</body>
+</html>
