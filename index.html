@@ -424,6 +424,9 @@ function resetForm() {
   document.getElementById('submit-btn').textContent = 'Publicar punto';
 }
 
+// Marcador temporal de búsqueda
+let searchMarker = null;
+
 // Geocoding search
 async function geocodeSearch(q) {
   const res = document.getElementById('search-results');
@@ -455,7 +458,26 @@ async function geocodeSearch(q) {
         res.style.display = 'none';
         document.getElementById('search-input').value = item.name;
         document.getElementById('search-clear').style.display = 'block';
-        if (item.type === 'punto') renderMarkers();
+
+        // Quitar marcador anterior de búsqueda
+        if (searchMarker) { map.removeLayer(searchMarker); searchMarker = null; }
+
+        if (item.type === 'punto') {
+          // Es un punto existente — resaltar sus marcadores
+          renderMarkers();
+        } else {
+          // Es una dirección geocodificada — poner marcador de ubicación
+          searchMarker = L.marker([item.lat, item.lng], {
+            icon: L.divIcon({
+              html: `<div style="display:flex;flex-direction:column;align-items:center">
+                <div style="background:#2563EB;color:#fff;font-size:11px;font-weight:600;padding:3px 8px;border-radius:10px;white-space:nowrap;box-shadow:0 2px 6px rgba(37,99,235,0.4)">${item.name}</div>
+                <div style="width:2px;height:6px;background:#2563EB;margin:0 auto"></div>
+                <div style="width:12px;height:12px;background:#2563EB;border:2px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.2)"></div>
+              </div>`,
+              className: '', iconSize: [120, 40], iconAnchor: [60, 40]
+            })
+          }).addTo(map);
+        }
       });
     });
   } catch(e) { res.style.display = 'none'; }
@@ -515,6 +537,7 @@ window.addEventListener('load', () => {
     searchInput.value = '';
     searchClear.style.display = 'none';
     document.getElementById('search-results').style.display = 'none';
+    if (searchMarker) { map.removeLayer(searchMarker); searchMarker = null; }
     renderMarkers();
   });
   document.addEventListener('click', (e) => {
