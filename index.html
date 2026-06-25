@@ -571,16 +571,6 @@ function renderMarkers() {
       </div>
       <button class="popup-report-btn" onclick="reportarPunto('${pt.id}')">⚠️ Esta info ya no es correcta</button>
     </div>`, { maxWidth: 280 });
-      ${pt.direccion  ? `<div class="popup-row">📍 ${pt.direccion}</div>`  : ''}
-      ${pt.horario    ? `<div class="popup-row">🕐 ${pt.horario}</div>`    : ''}
-      ${pt.telefono   ? `<div class="popup-row">📞 ${pt.telefono}</div>`   : ''}
-      ${pt.descripcion? `<div class="popup-row" style="margin-top:5px">${pt.descripcion}</div>` : ''}
-      ${pt.necesitan||pt.ofrecen ? `<div class="popup-needs">
-        ${pt.necesitan?`<div><strong>Necesitan:</strong> ${pt.necesitan}</div>`:''}
-        ${pt.ofrecen?`<div><strong>Ofrecen:</strong> ${pt.ofrecen}</div>`:''}
-      </div>`:''}
-      <a class="popup-btn" href="https://maps.google.com/?q=${pt.lat},${pt.lng}" target="_blank">Cómo llegar →</a>
-    </div>`, { maxWidth: 280 });
     m.addTo(map);
     markers.push(m);
   });
