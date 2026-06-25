@@ -413,7 +413,22 @@ async function submitForm() {
   document.getElementById('submit-thanks').style.display = 'block';
 }
 
-function resetForm() {
+function abrirFormularioDesdeSearch(lat, lng, nombre, direccion) {
+  // Cerrar popup del marcador
+  if (searchMarker) searchMarker.closePopup();
+  // Pre-llenar coordenadas y dirección
+  pendingLat = lat;
+  pendingLng = lng;
+  document.getElementById('f-direccion').value = direccion;
+  const badge = document.getElementById('coords-badge');
+  badge.style.display = 'block';
+  badge.textContent = `📍 ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  // Abrir panel
+  document.getElementById('side-panel').classList.add('open');
+  document.getElementById('form-section').style.display = 'block';
+  document.getElementById('submit-thanks').style.display = 'none';
+  setTimeout(() => document.getElementById('f-nombre').focus(), 100);
+}
   ['f-nombre','f-horario','f-telefono','f-descripcion','f-reportado','f-direccion'].forEach(id => document.getElementById(id).value = '');
   pendingLat = null; pendingLng = null;
   if (pickMarker) { map.removeLayer(pickMarker); pickMarker = null; }
@@ -466,7 +481,7 @@ async function geocodeSearch(q) {
           // Es un punto existente — resaltar sus marcadores
           renderMarkers();
         } else {
-          // Es una dirección geocodificada — poner marcador de ubicación
+          // Es una dirección geocodificada — poner marcador clickeable
           searchMarker = L.marker([item.lat, item.lng], {
             icon: L.divIcon({
               html: `<div style="display:flex;flex-direction:column;align-items:center">
@@ -477,6 +492,18 @@ async function geocodeSearch(q) {
               className: '', iconSize: [120, 40], iconAnchor: [60, 40]
             })
           }).addTo(map);
+
+          // Popup con opción de agregar punto
+          searchMarker.bindPopup(`
+            <div style="font-family:-apple-system,sans-serif;min-width:180px;text-align:center;padding:4px 0">
+              <div style="font-size:13px;font-weight:600;color:#111;margin-bottom:4px">${item.name}</div>
+              <div style="font-size:11px;color:#666;margin-bottom:10px">${item.addr.split(',').slice(0,2).join(',')}</div>
+              <button onclick="abrirFormularioDesdeSearch(${item.lat}, ${item.lng}, '${item.name.replace(/'/g,"\\'")}', '${item.addr.split(',').slice(0,3).join(',').replace(/'/g,"\\'")}' )"
+                style="width:100%;padding:8px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">
+                + Agregar punto aquí
+              </button>
+            </div>
+          `, { closeButton: true, maxWidth: 220 }).openPopup();
         }
       });
     });
