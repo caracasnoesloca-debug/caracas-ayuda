@@ -108,9 +108,9 @@
 
     /* BANNER */
     #banner { padding: 8px 16px; background: rgba(37,99,235,0.08); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-bottom: 1px solid rgba(37,99,235,0.15); display: flex; align-items: flex-start; gap: 8px; flex-shrink: 0; }
-    #banner-text { font-size: 12px; color: #1e40af; line-height: 1.5; flex: 1; }
+    #banner-text { font-size: 13px; color: #1e40af; line-height: 1.5; flex: 1; }
     #banner-text strong { font-weight: 600; }
-    #banner-close { background: none; border: none; font-size: 18px; color: #93c5fd; cursor: pointer; flex-shrink: 0; line-height: 1; padding: 0; }
+    #banner-close { background: none; border: none; font-size: 25px; color: #93c5fd; cursor: pointer; flex-shrink: 0; line-height: 1; padding: 0; }
 
     /* SEARCH */
     #search-wrap { flex: 1; position: relative; }
@@ -131,7 +131,7 @@
     /* FILTERS */
     #filters { display: flex; gap: 5px; padding-bottom: 10px; overflow-x: auto; scrollbar-width: none; }
     #filters::-webkit-scrollbar { display: none; }
-    .filter-btn { padding: 5px 12px; font-size: 12px; border: 1px solid rgba(0,0,0,0.12); border-radius: 20px; background: rgba(255,255,255,0.7); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.15s; font-family: inherit; }
+    .filter-btn { padding: 5px 14px; font-size: 12px; border: 1px solid rgba(0,0,0,0.12); border-radius: 20px; background: rgba(255,255,255,0.7); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.15s; font-family: inherit; }
     .filter-btn:hover { border-color: var(--blue); color: var(--blue); }
     .filter-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
     .filter-tipo.active[data-tipo="ayuda"]     { background: #2563EB; color: #fff; border-color: #2563EB; }
@@ -165,7 +165,7 @@
     #dblclick-hint.show { opacity: 1; }
 
     /* LEYENDA */
-    #legend { position: absolute; bottom: 14px; right: 10px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); box-shadow: var(--glass-shadow); font-size: 12px; color: var(--text-muted); z-index: 999; display: flex; flex-direction: column; overflow: hidden; }
+    #legend { position: absolute; bottom: 20px; right: 10px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); box-shadow: var(--glass-shadow); font-size: 12px; color: var(--text-muted); z-index: 999; display: flex; flex-direction: column; overflow: hidden; }
     #legend::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.8),transparent); pointer-events:none; z-index:1; }
     .legend-item { display: flex; align-items: center; gap: 8px; padding: 9px 14px; cursor: pointer; transition: background 0.1s; border-bottom: 0.5px solid var(--border); white-space: nowrap; }
     .legend-item:last-child { border-bottom: none; }
@@ -220,7 +220,7 @@
     #submit-thanks p { font-size: 13px; color: var(--text-muted); margin-top: 10px; line-height: 1.6; }
 
     /* DISCLAIMER */
-    #disclaimer { padding: 7px 16px; font-size: 13px; color: var(--text-muted); background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid var(--glass-border); text-align: center; flex-shrink: 0; line-height: 1.6; }
+    #disclaimer { padding: 20px 16px; font-size: 13px; color: var(--text-muted); background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid var(--glass-border); text-align: center; flex-shrink: 0; line-height: 1.6; }
 
     /* LOADING */
     #loading { position: absolute; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 2000; pointer-events: none; }
@@ -287,7 +287,7 @@
 
   <div id="banner">
     <div id="banner-text">
-      ℹ️ &nbsp;<strong>¿Necesitas ayuda o conoces un punto de apoyo?</strong> Este mapa reúne centros de agua, comida, refugio y atención médica tras el terremoto. La información es actualizada por voluntarios — verifica antes de desplazarte. Creado sin fines de lucro por <strong>Caracas Merch</strong>.
+      ℹ️ &nbsp;<strong>¿Necesitas ayuda o sabes dónde están ayudando?</strong> Agrega puntos de ayuda, centros de acopio, refugios, agua, medicamentos y más, o reporta lo que se necesita en tu zona. La información la construye la comunidad: verifica antes de desplazarte. Creado sin fines de lucro por <strong>Caracas Merch</strong>.
     </div>
     <button id="banner-close" aria-label="Cerrar">×</button>
   </div>
