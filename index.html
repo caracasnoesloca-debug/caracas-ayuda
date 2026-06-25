@@ -118,6 +118,8 @@
     #filters::-webkit-scrollbar { display: none; }
     .filter-btn { padding: 4px 11px; font-size: 12px; border: 1px solid var(--border); border-radius: 20px; background: var(--bg); color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.12s; }
     .filter-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .filter-tipo.active[data-tipo="ayuda"]     { background: #2563EB; color: #fff; border-color: #2563EB; }
+    .filter-tipo.active[data-tipo="necesidad"] { background: #dc2626; color: #fff; border-color: #dc2626; }
 
     /* MAP */
     #map-container { flex: 1; position: relative; min-height: 0; }
@@ -238,8 +240,8 @@
     </div>
     <div id="filters">
       <button class="filter-btn active" data-cat="todos">Todos</button>
-      <button class="filter-btn filter-tipo" data-tipo="ayuda" style="border-color:#16a34a;color:#16a34a">🟢 Dando ayuda</button>
-      <button class="filter-btn filter-tipo" data-tipo="necesidad" style="border-color:#dc2626;color:#dc2626">🔴 Necesitan</button>
+      <button class="filter-btn filter-tipo" data-tipo="ayuda" style="border-color:#2563EB;color:#2563EB">🔵 Punto de ayuda</button>
+      <button class="filter-btn filter-tipo" data-tipo="necesidad" style="border-color:#dc2626;color:#dc2626">🔴 Punto de necesidad</button>
       <button class="filter-btn" data-cat="acopio">📦 Acopio</button>
       <button class="filter-btn" data-cat="agua">💧 Agua</button>
       <button class="filter-btn" data-cat="comida">🍲 Comida</button>
@@ -710,7 +712,6 @@ window.addEventListener('load', () => {
     });
   });
 
-  // Filtros de tipo
   document.querySelectorAll('.filter-tipo').forEach(btn => {
     btn.addEventListener('click', function() {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
