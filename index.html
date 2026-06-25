@@ -521,7 +521,7 @@ function renderMarkers() {
         <a class="popup-btn" href="https://maps.google.com/?q=${pt.lat},${pt.lng}" target="_blank">Cómo llegar →</a>
         <button class="popup-share-btn" onclick="compartirPunto('${pt.id}','${pt.nombre.replace(/'/g,"\\'")}')">Compartir</button>
       </div>
-      <button class="popup-report-btn" onclick="reportarPunto('${pt.id}')">⚠️ Esta info ya no es correcta</button>
+      <button class="popup-report-btn" onclick="reportarPunto('${pt.id}')">⚠️ Reportar</button>
     </div>`, { maxWidth: 280 });
     m.addTo(map);
     markers.push(m);
