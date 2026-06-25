@@ -108,9 +108,9 @@
 
     /* BANNER */
     #banner { padding: 8px 16px; background: rgba(37,99,235,0.08); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-bottom: 1px solid rgba(37,99,235,0.15); display: flex; align-items: flex-start; gap: 8px; flex-shrink: 0; }
-    #banner-text { font-size: 13px; color: #1e40af; line-height: 1.5; flex: 1; }
+    #banner-text { font-size: 12px; color: #1e40af; line-height: 1.5; flex: 1; }
     #banner-text strong { font-weight: 600; }
-    #banner-close { background: none; border: none; font-size: 25px; color: #93c5fd; cursor: pointer; flex-shrink: 0; line-height: 1; padding: 0; }
+    #banner-close { background: none; border: none; font-size: 18px; color: #93c5fd; cursor: pointer; flex-shrink: 0; line-height: 1; padding: 0; }
 
     /* SEARCH */
     #search-wrap { flex: 1; position: relative; }
@@ -131,7 +131,7 @@
     /* FILTERS */
     #filters { display: flex; gap: 5px; padding-bottom: 10px; overflow-x: auto; scrollbar-width: none; }
     #filters::-webkit-scrollbar { display: none; }
-    .filter-btn { padding: 5px 14px; font-size: 12px; border: 1px solid rgba(0,0,0,0.12); border-radius: 20px; background: rgba(255,255,255,0.7); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.15s; font-family: inherit; }
+    .filter-btn { padding: 5px 12px; font-size: 12px; border: 1px solid rgba(0,0,0,0.12); border-radius: 20px; background: rgba(255,255,255,0.7); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.15s; font-family: inherit; }
     .filter-btn:hover { border-color: var(--blue); color: var(--blue); }
     .filter-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
     .filter-tipo.active[data-tipo="ayuda"]     { background: #2563EB; color: #fff; border-color: #2563EB; }
@@ -165,7 +165,7 @@
     #dblclick-hint.show { opacity: 1; }
 
     /* LEYENDA */
-    #legend { position: absolute; bottom: 20px; right: 10px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); box-shadow: var(--glass-shadow); font-size: 12px; color: var(--text-muted); z-index: 999; display: flex; flex-direction: column; overflow: hidden; }
+    #legend { position: absolute; bottom: 14px; right: 10px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); box-shadow: var(--glass-shadow); font-size: 12px; color: var(--text-muted); z-index: 999; display: flex; flex-direction: column; overflow: hidden; }
     #legend::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.8),transparent); pointer-events:none; z-index:1; }
     .legend-item { display: flex; align-items: center; gap: 8px; padding: 9px 14px; cursor: pointer; transition: background 0.1s; border-bottom: 0.5px solid var(--border); white-space: nowrap; }
     .legend-item:last-child { border-bottom: none; }
@@ -220,7 +220,7 @@
     #submit-thanks p { font-size: 13px; color: var(--text-muted); margin-top: 10px; line-height: 1.6; }
 
     /* DISCLAIMER */
-    #disclaimer { padding: 20px 16px; font-size: 13px; color: var(--text-muted); background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid var(--glass-border); text-align: center; flex-shrink: 0; line-height: 1.6; }
+    #disclaimer { padding: 7px 16px; font-size: 13px; color: var(--text-muted); background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid var(--glass-border); text-align: center; flex-shrink: 0; line-height: 1.6; }
 
     /* LOADING */
     #loading { position: absolute; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 2000; pointer-events: none; }
@@ -287,7 +287,7 @@
 
   <div id="banner">
     <div id="banner-text">
-      ℹ️ &nbsp;<strong>¿Necesitas ayuda o sabes dónde están ayudando?</strong> Agrega puntos de ayuda, centros de acopio, refugios, agua, medicamentos y más, o reporta lo que se necesita en tu zona. La información la construye la comunidad: verifica antes de desplazarte. Creado sin fines de lucro por <strong>Caracas Merch</strong>.
+      ℹ️ &nbsp;<strong>¿Necesitas ayuda o sabes dónde están dando?</strong> Agrega puntos de ayuda, centros de acopio, refugios, agua, medicamentos y más — o reporta lo que se necesita en tu zona. La información la construye la comunidad: verifica antes de desplazarte. Creado sin fines de lucro por <strong>Caracas Merch</strong>.
     </div>
     <button id="banner-close" aria-label="Cerrar">×</button>
   </div>
@@ -432,7 +432,6 @@ const catsNecesidad = {
   voluntarios: { label:'Personal médico / voluntarios', icon:'🩺' },
 };
 
-// Merge para lookup de iconos en el mapa
 const cats = { ...catsAyuda, ...catsNecesidad };
 
 let map, markers = [], allPuntos = [], activeFilter = 'todos', activeTipo = 'todos';
@@ -498,9 +497,6 @@ function renderMarkers() {
     const qOk    = !q || p.nombre.toLowerCase().includes(q) || (p.descripcion||'').toLowerCase().includes(q) || (p.direccion||'').toLowerCase().includes(q);
     return catOk && tipoOk && qOk;
   });
-  document.getElementById('counter-badge') && (document.getElementById('counter-badge').textContent = `${filtered.length} punto${filtered.length!==1?'s':''} activo${filtered.length!==1?'s':''}`);
-
-  // Actualizar contadores de leyenda
   const totalAyuda     = allPuntos.filter(p => (p.tipo||'ayuda') === 'ayuda').length;
   const totalNecesidad = allPuntos.filter(p => p.tipo === 'necesidad').length;
   document.getElementById('count-ayuda').textContent     = totalAyuda;
@@ -542,12 +538,10 @@ async function loadPuntos() {
   renderMarkers();
 }
 
-// PICK MODE — oculta panel, activa crosshair
 function enterPickMode() {
   pickMode = true;
   map.getContainer().classList.add('picking');
   document.getElementById('pick-overlay').classList.add('active');
-  // Ocultar panel completamente para ver el mapa limpio
   document.getElementById('side-panel').classList.remove('open');
 }
 
@@ -581,18 +575,14 @@ function setPickedLocation(lat, lng) {
       className: '', iconSize: [22,22], iconAnchor: [11,11]
     })
   }).addTo(map);
-
   const badge = document.getElementById('coords-badge');
   badge.style.display = 'block';
   badge.textContent = '📍 Obteniendo dirección...';
-
   reverseGeocode(lat, lng).then(addr => {
     const shortAddr = addr.split(',').slice(0,3).join(',').trim();
     document.getElementById('f-direccion').value = shortAddr;
     badge.textContent = `📍 ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
   });
-
-  // exitPickMode reabre el panel automáticamente
   exitPickModeAndReopen();
 }
 
@@ -628,16 +618,13 @@ async function submitForm() {
 }
 
 function abrirFormularioDesdeSearch(lat, lng, nombre, direccion) {
-  // Cerrar popup del marcador
   if (searchMarker) searchMarker.closePopup();
-  // Pre-llenar coordenadas y dirección
   pendingLat = lat;
   pendingLng = lng;
   document.getElementById('f-direccion').value = direccion;
   const badge = document.getElementById('coords-badge');
   badge.style.display = 'block';
   badge.textContent = `📍 ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-  // Abrir panel
   document.getElementById('side-panel').classList.add('open');
   document.getElementById('form-section').style.display = 'block';
   document.getElementById('submit-thanks').style.display = 'none';
@@ -662,10 +649,8 @@ function resetForm() {
   document.getElementById('submit-btn').textContent = 'Publicar punto';
 }
 
-// Marcador temporal de búsqueda
 let searchMarker = null;
 
-// Geocoding search
 async function geocodeSearch(q) {
   const res = document.getElementById('search-results');
   if (!q || q.length < 3) { res.style.display = 'none'; return; }
@@ -696,15 +681,10 @@ async function geocodeSearch(q) {
         res.style.display = 'none';
         document.getElementById('search-input').value = item.name;
         document.getElementById('search-clear').style.display = 'block';
-
-        // Quitar marcador anterior de búsqueda
         if (searchMarker) { map.removeLayer(searchMarker); searchMarker = null; }
-
         if (item.type === 'punto') {
-          // Es un punto existente — resaltar sus marcadores
           renderMarkers();
         } else {
-          // Es una dirección geocodificada — poner marcador clickeable
           searchMarker = L.marker([item.lat, item.lng], {
             icon: L.divIcon({
               html: `<div style="display:flex;flex-direction:column;align-items:center">
@@ -715,8 +695,6 @@ async function geocodeSearch(q) {
               className: '', iconSize: [120, 40], iconAnchor: [60, 40]
             })
           }).addTo(map);
-
-          // Popup con opción de agregar punto
           searchMarker.bindPopup(`
             <div style="font-family:-apple-system,sans-serif;min-width:180px;text-align:center;padding:4px 0">
               <div style="font-size:13px;font-weight:600;color:#111;margin-bottom:4px">${item.name}</div>
@@ -738,35 +716,26 @@ window.addEventListener('load', () => {
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors', maxZoom: 19
   }).addTo(map);
-  // Zoom control abajo a la izquierda, lejos del panel y del header
   L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
   loadPuntos();
-
-  // Fallback: quitar loading después de 5s aunque Supabase falle
   setTimeout(() => { document.getElementById('loading').style.display = 'none'; }, 5000);
-
-  // Polling cada 30s en vez de WebSocket permanente
   setInterval(loadPuntos, 30000);
 
-  // Click en el mapa — solo actúa si estamos en pick mode
   map.on('click', (e) => {
     if (!pickMode) return;
     setPickedLocation(e.latlng.lat, e.latlng.lng);
   });
 
-  // Botón "📍 En mapa" dentro del formulario
   document.getElementById('btn-pick-map').addEventListener('click', () => {
     document.getElementById('side-panel').classList.add('open');
     enterPickMode();
   });
 
-  // Cancelar pick mode — reabre el panel
   document.getElementById('pick-cancel').addEventListener('click', () => {
     exitPickModeAndReopen();
   });
 
-  // Filtros de categoría
   document.querySelectorAll('.filter-btn:not(.filter-tipo)').forEach(btn => {
     btn.addEventListener('click', function() {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -787,7 +756,6 @@ window.addEventListener('load', () => {
     });
   });
 
-  // Opciones de categoría por tipo
   function updateCategorias(tipo) {
     const sel = document.getElementById('f-categoria');
     const catMap = tipo === 'necesidad' ? catsNecesidad : catsAyuda;
@@ -805,7 +773,6 @@ window.addEventListener('load', () => {
     }
   }
 
-  // Selector tipo en formulario
   document.querySelectorAll('.tipo-btn').forEach(btn => {
     btn.addEventListener('click', function() {
       document.querySelectorAll('.tipo-btn').forEach(b => {
@@ -828,7 +795,6 @@ window.addEventListener('load', () => {
     });
   });
 
-  // Search
   const searchInput = document.getElementById('search-input');
   const searchClear = document.getElementById('search-clear');
   searchInput.addEventListener('input', (e) => {
@@ -849,20 +815,35 @@ window.addEventListener('load', () => {
     if (!e.target.closest('#search-wrap')) document.getElementById('search-results').style.display = 'none';
   });
 
-  // Geolocalización
+  // Geolocalización — mejorada para iOS Safari
   document.getElementById('btn-locate').addEventListener('click', () => {
     const btn = document.getElementById('btn-locate');
+    if (!navigator.geolocation) {
+      alert('Tu navegador no soporta geolocalización.');
+      return;
+    }
     btn.textContent = '⏳';
     navigator.geolocation.getCurrentPosition(
       pos => {
-        map.setView([pos.coords.latitude, pos.coords.longitude], 15);
+        const { latitude: lat, longitude: lng } = pos.coords;
+        map.setView([lat, lng], 15);
         btn.textContent = '📍';
-        L.circleMarker([pos.coords.latitude, pos.coords.longitude], {
-          radius: 8, fillColor: '#2563EB', fillOpacity: 1,
-          color: '#fff', weight: 2
-        }).addTo(map).bindPopup('Estás aquí').openPopup();
+        L.circleMarker([lat, lng], {
+          radius: 10, fillColor: '#2563EB', fillOpacity: 1,
+          color: '#fff', weight: 2.5
+        }).addTo(map).bindPopup('📍 Estás aquí').openPopup();
       },
-      () => { btn.textContent = '📍'; alert('No se pudo obtener tu ubicación.'); }
+      (err) => {
+        btn.textContent = '📍';
+        if (err.code === 1) {
+          alert('Permiso denegado. Activa la ubicación en Ajustes → Safari → Ubicación.');
+        } else if (err.code === 2) {
+          alert('No se pudo obtener tu ubicación. Verifica que el GPS esté activado.');
+        } else {
+          alert('Tiempo de espera agotado. Intenta de nuevo.');
+        }
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
   });
 
@@ -881,6 +862,7 @@ window.addEventListener('load', () => {
     }, 300);
     setTimeout(() => clearInterval(check), 5000);
   }
+
   function openListPanel(tipo) {
     const puntos = allPuntos.filter(p => (p.tipo||'ayuda') === tipo);
     const title  = tipo === 'ayuda' ? '🔵 Puntos de ayuda' : '🔴 Puntos de necesidad';
