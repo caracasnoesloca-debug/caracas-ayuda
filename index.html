@@ -162,18 +162,16 @@
       #search-wrap { order: 3; flex: 1 1 100%; }
       #side-panel {
         position: fixed;
-        top: auto;
-        bottom: 0;
+        top: var(--header-total, 120px);
         left: 0;
         right: 0;
+        bottom: 0;
         width: 100%;
-        max-height: 80vh;
-        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-        transform: translateY(100%);
-        transition: transform 0.3s ease;
-        display: block !important;
+        max-height: none;
+        border-radius: 0;
+        overflow-y: auto;
+        z-index: 1001;
       }
-      #side-panel.open { transform: translateY(0); }
       #list-panel { width: calc(100% - 20px); }
     }
   </style>
@@ -602,8 +600,19 @@ window.addEventListener('load', () => {
   L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
   // Sticky banner — calcula altura del topbar dinámicamente
-  const topbarH = document.getElementById('topbar').offsetHeight;
-  document.documentElement.style.setProperty('--topbar-height', topbarH + 'px');
+  // Altura sticky para banner y panel mobile
+  function updateHeights() {
+    const topbarH = document.getElementById('topbar').offsetHeight;
+    const bannerEl = document.getElementById('banner');
+    const bannerH = bannerEl.style.display === 'none' ? 0 : bannerEl.offsetHeight;
+    document.documentElement.style.setProperty('--topbar-height', topbarH + 'px');
+    document.documentElement.style.setProperty('--header-total', (topbarH + bannerH) + 'px');
+  }
+  updateHeights();
+  document.getElementById('banner-close').addEventListener('click', () => {
+    document.getElementById('banner').style.display = 'none';
+    updateHeights();
+  });
 
   loadPuntos();
   setTimeout(() => { document.getElementById('loading').style.display = 'none'; }, 5000);
@@ -735,7 +744,6 @@ window.addEventListener('load', () => {
   });
   document.getElementById('panel-close').addEventListener('click', () => { document.getElementById('side-panel').classList.remove('open'); exitPickMode(); });
   document.getElementById('submit-btn').addEventListener('click', submitForm);
-  document.getElementById('banner-close').addEventListener('click', () => { document.getElementById('banner').style.display = 'none'; });
 });
 
 // ─── IR AL PUNTO DESDE LA LISTA ───────────────────────────────
