@@ -518,8 +518,8 @@ function renderMarkers() {
       ${pt.descripcion? `<div class="popup-row" style="margin-top:5px">${pt.descripcion}</div>` : ''}
       <div class="popup-time">${timeAgo(pt.created_at)}</div>
       <div class="popup-actions">
-        <a class="popup-btn" href="https://maps.google.com/?q=${pt.lat},${pt.lng}" target="_blank">🗺️ Cómo llegar</a>
-        <button class="popup-share-btn" onclick="compartirPunto('${pt.id}','${pt.nombre.replace(/'/g,"\\'")}')">📤</button>
+        <a class="popup-btn" href="https://maps.google.com/?q=${pt.lat},${pt.lng}" target="_blank">Cómo llegar →</a>
+        <button class="popup-share-btn" onclick="compartirPunto('${pt.id}','${pt.nombre.replace(/'/g,"\\'")}')">Compartir</button>
       </div>
       <button class="popup-report-btn" onclick="reportarPunto('${pt.id}')">⚠️ Esta info ya no es correcta</button>
     </div>`, { maxWidth: 280 });
@@ -884,7 +884,7 @@ window.addEventListener('load', () => {
           </div>
           <div class="list-punto-actions">
             <a class="list-punto-btn" href="https://maps.google.com/?q=${p.lat},${p.lng}" target="_blank">Cómo llegar →</a>
-            <button class="list-report-btn" onclick="compartirPunto('${p.id}','${p.nombre.replace(/'/g,"\\'")}')">📤 Compartir</button>
+            <button class="list-report-btn" onclick="compartirPunto('${p.id}','${p.nombre.replace(/'/g,"\\'")}')">Compartir</button>
           </div>
         </div>`;
       }).join('');
