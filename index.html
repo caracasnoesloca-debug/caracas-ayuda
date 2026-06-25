@@ -267,7 +267,7 @@
     #disclaimer { padding: 7px 16px; font-size: 13px; color: var(--text-muted); background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid var(--glass-border); text-align: center; flex-shrink: 0; line-height: 1.6; }
 
     /* LOADING */
-    #loading { position: absolute; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 2000; }
+    #loading { position: absolute; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 2000; pointer-events: none; }
     #loading svg { animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     #loading p { font-size: 14px; color: var(--text-muted); }
@@ -586,9 +586,11 @@ function renderMarkers() {
 }
 
 async function loadPuntos() {
-  const { data, error } = await db.from('puntos').select('*').order('created_at', { ascending: false });
-  if (error) { console.error(error); return; }
-  allPuntos = data || [];
+  try {
+    const { data, error } = await db.from('puntos').select('*').order('created_at', { ascending: false });
+    if (error) { console.error('Supabase error:', error); }
+    else { allPuntos = data || []; }
+  } catch(e) { console.error('Fetch error:', e); }
   document.getElementById('loading').style.display = 'none';
   renderMarkers();
 }
@@ -793,6 +795,9 @@ window.addEventListener('load', () => {
   L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
   loadPuntos();
+
+  // Fallback: quitar loading después de 5s aunque Supabase falle
+  setTimeout(() => { document.getElementById('loading').style.display = 'none'; }, 5000);
 
   // Polling cada 30s en vez de WebSocket permanente
   setInterval(loadPuntos, 30000);
