@@ -294,6 +294,8 @@
             <option value="carga">🔋 Carga eléctrica / internet</option>
             <option value="mascotas">🐶 Ayuda para mascotas</option>
             <option value="combustible">⛽ Combustible</option>
+            <option value="transporte">🚗 Transporte / traslados</option>
+            <option value="higiene">🧴 Artículos de higiene</option>
           </select>
           <label class="form-label">Dirección *</label>
           <div class="dir-wrap">
@@ -305,7 +307,7 @@
           <input class="form-input" id="f-horario" type="text" placeholder="Ej. Lun–Dom 8am–6pm" />
           <label class="form-label">Teléfono (opcional)</label>
           <input class="form-input" id="f-telefono" type="text" placeholder="0412-000-0000" />
-          <label class="form-label">Qué ofrecen / descripción</label>
+          <label class="form-label" id="label-descripcion">Qué ofrecen / descripción</label>
           <textarea class="form-input" id="f-descripcion" placeholder="Ej. Agua embotellada, comida enlatada..."></textarea>
           <label class="form-label">Tu nombre (opcional)</label>
           <input class="form-input" id="f-reportado" type="text" placeholder="Quien reporta" />
@@ -334,17 +336,39 @@ const SUPABASE_KEY = 'sb_publishable_bx7plOxEb3M4aNID_stt-g_WPh-FS88';
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const cats = {
-  acopio:       { label:'Centro de acopio',    icon:'📦' },
-  agua:         { label:'Agua potable',         icon:'💧' },
-  comida:       { label:'Comida / alimentos',   icon:'🍲' },
-  refugio:      { label:'Refugio',              icon:'🏠' },
-  medico:       { label:'Atención médica',      icon:'🏥' },
-  medicamentos: { label:'Medicamentos',         icon:'💊' },
-  carga:        { label:'Carga / internet',     icon:'🔋' },
-  mascotas:     { label:'Mascotas',             icon:'🐶' },
-  combustible:  { label:'Combustible',          icon:'⛽' },
+const catsAyuda = {
+  acopio:      { label:'Centro de acopio',           icon:'📦' },
+  donaciones:  { label:'Centro de donaciones',        icon:'🤝' },
+  agua:        { label:'Agua potable',                icon:'💧' },
+  comida:      { label:'Comida / alimentos',          icon:'🍲' },
+  refugio:     { label:'Refugio / albergue',          icon:'🏠' },
+  medico:      { label:'Atención médica',             icon:'🏥' },
+  medicamentos:{ label:'Medicamentos',                icon:'💊' },
+  carga:       { label:'Carga eléctrica / internet',  icon:'🔋' },
+  mascotas:    { label:'Ayuda para mascotas',         icon:'🐶' },
+  combustible: { label:'Combustible',                 icon:'⛽' },
+  transporte:  { label:'Transporte / traslados',      icon:'🚗' },
+  higiene:     { label:'Artículos de higiene',        icon:'🧴' },
 };
+
+const catsNecesidad = {
+  agua:        { label:'Agua potable',             icon:'💧' },
+  alimentos:   { label:'Alimentos',                icon:'🍲' },
+  medicamentos:{ label:'Medicamentos y primeros auxilios', icon:'💊' },
+  refugio:     { label:'Refugio / alojamiento',    icon:'🏠' },
+  ropa:        { label:'Ropa y calzado',           icon:'👕' },
+  rescate:     { label:'Equipos de rescate',       icon:'🪖' },
+  herramientas:{ label:'Herramientas y materiales',icon:'🧰' },
+  iluminacion: { label:'Linternas / baterías',     icon:'🔦' },
+  higiene:     { label:'Artículos de higiene',     icon:'🧴' },
+  mascotas:    { label:'Ayuda para mascotas',      icon:'🐶' },
+  bebes:       { label:'Artículos para bebés y niños', icon:'👶' },
+  transporte:  { label:'Transporte / traslados',   icon:'🚗' },
+  voluntarios: { label:'Personal médico / voluntarios', icon:'🩺' },
+};
+
+// Merge para lookup de iconos en el mapa
+const cats = { ...catsAyuda, ...catsNecesidad };
 
 let map, markers = [], allPuntos = [], activeFilter = 'todos', activeTipo = 'todos';
 let pendingLat = null, pendingLng = null;
@@ -661,6 +685,24 @@ window.addEventListener('load', () => {
     });
   });
 
+  // Opciones de categoría por tipo
+  function updateCategorias(tipo) {
+    const sel = document.getElementById('f-categoria');
+    const catMap = tipo === 'necesidad' ? catsNecesidad : catsAyuda;
+    sel.innerHTML = Object.entries(catMap).map(([val, c]) =>
+      `<option value="${val}">${c.icon} ${c.label}</option>`
+    ).join('');
+    const desc = document.getElementById('label-descripcion');
+    const textarea = document.getElementById('f-descripcion');
+    if (tipo === 'necesidad') {
+      desc.textContent = 'Qué necesitan / descripción';
+      textarea.placeholder = 'Ej. Cascos, guantes, agua, comida enlatada...';
+    } else {
+      desc.textContent = 'Qué ofrecen / descripción';
+      textarea.placeholder = 'Ej. Agua embotellada, comida enlatada...';
+    }
+  }
+
   // Selector tipo en formulario
   document.querySelectorAll('.tipo-btn').forEach(btn => {
     btn.addEventListener('click', function() {
@@ -680,6 +722,7 @@ window.addEventListener('load', () => {
         this.style.color       = '#991b1b';
       }
       document.getElementById('f-tipo').value = tipo;
+      updateCategorias(tipo);
     });
   });
 
