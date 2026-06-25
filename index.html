@@ -77,8 +77,12 @@
     #dblclick-hint { position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: #fff; font-size: 12px; padding: 6px 14px; border-radius: 20px; z-index: 999; pointer-events: none; white-space: nowrap; opacity: 0; transition: opacity 0.3s; }
     #dblclick-hint.show { opacity: 1; }
 
-    /* COUNTER */
-    #counter-badge { position: absolute; bottom: 36px; left: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 5px 12px; font-size: 12px; color: var(--text-muted); z-index: 999; }
+    /* LEYENDA */
+    #legend { position: absolute; bottom: 36px; right: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 7px 12px; font-size: 12px; color: var(--text-muted); z-index: 999; display: flex; flex-direction: column; gap: 5px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .legend-dot.green { background: #16a34a; }
+    .legend-dot.amber { background: #ca8a04; }
 
     /* SIDE PANEL */
     #side-panel { position: absolute; top: 10px; right: 10px; width: 290px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); z-index: 999; display: none; max-height: calc(100% - 20px); overflow-y: auto; box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
@@ -182,7 +186,10 @@
         <button id="pick-cancel">Cancelar</button>
       </div>
     </div>
-    <div id="counter-badge">Cargando...</div>
+    <div id="legend">
+      <div class="legend-item"><span class="legend-dot green"></span> Punto verificado</div>
+      <div class="legend-item"><span class="legend-dot amber"></span> Por verificar</div>
+    </div>
     <div id="dblclick-hint">📍 Punto agregado al mapa — haz doble click en cualquier lugar</div>
 
     <div id="side-panel">
@@ -211,9 +218,7 @@
             <input class="form-input" id="f-direccion" type="text" placeholder="Escribe o selecciona en el mapa" />
             <button id="btn-pick-map" type="button">📍 En mapa</button>
           </div>
-          <label class="form-label">Ubicación en el mapa</label>
           <div id="coords-badge">📍 Ubicación seleccionada en el mapa</div>
-          <p style="font-size:11px;color:var(--text-muted);margin-top:4px">Haz doble click en el mapa para marcar la ubicación exacta.</p>
           <label class="form-label">Horario (opcional)</label>
           <input class="form-input" id="f-horario" type="text" placeholder="Ej. Lun–Dom 8am–6pm" />
           <label class="form-label">Teléfono (opcional)</label>
@@ -293,7 +298,7 @@ function renderMarkers() {
     const qOk = !q || p.nombre.toLowerCase().includes(q) || (p.descripcion||'').toLowerCase().includes(q) || (p.direccion||'').toLowerCase().includes(q);
     return catOk && qOk;
   });
-  document.getElementById('counter-badge').textContent = `${filtered.length} punto${filtered.length!==1?'s':''} activo${filtered.length!==1?'s':''}`;
+  document.getElementById('counter-badge') && (document.getElementById('counter-badge').textContent = `${filtered.length} punto${filtered.length!==1?'s':''} activo${filtered.length!==1?'s':''}`);
   filtered.forEach(pt => {
     const ci = cats[pt.categoria] || {};
     const m = L.marker([pt.lat, pt.lng], { icon: createIcon(pt) });
