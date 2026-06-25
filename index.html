@@ -221,6 +221,8 @@
     </div>
     <div id="filters">
       <button class="filter-btn active" data-cat="todos">Todos</button>
+      <button class="filter-btn filter-tipo" data-tipo="ayuda" style="border-color:#16a34a;color:#16a34a">🟢 Dando ayuda</button>
+      <button class="filter-btn filter-tipo" data-tipo="necesidad" style="border-color:#dc2626;color:#dc2626">🔴 Necesitan</button>
       <button class="filter-btn" data-cat="acopio">📦 Acopio</button>
       <button class="filter-btn" data-cat="agua">💧 Agua</button>
       <button class="filter-btn" data-cat="comida">🍲 Comida</button>
@@ -253,7 +255,9 @@
       </div>
     </div>
     <div id="legend">
-      <div class="legend-item"><span class="legend-dot green"></span> Punto verificado</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#2563EB"></span> Punto de ayuda</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#dc2626"></span> Punto de necesidad</div>
+      <div class="legend-item"><span class="legend-dot green"></span> Verificado</div>
       <div class="legend-item"><span class="legend-dot amber"></span> Por verificar</div>
     </div>
     <div id="dblclick-hint">📍 Punto agregado al mapa — haz doble click en cualquier lugar</div>
@@ -265,6 +269,18 @@
       </div>
       <div id="panel-body">
         <div id="form-section">
+          <label class="form-label">¿Qué tipo de punto es este? *</label>
+          <div id="tipo-selector" style="display:flex;gap:8px;margin-bottom:4px">
+            <button type="button" class="tipo-btn active" data-tipo="ayuda"
+              style="flex:1;padding:10px 8px;border-radius:var(--radius);border:2px solid #16a34a;background:#dcfce7;color:#166534;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">
+              🟢 Punto de ayuda<br><span style="font-size:11px;font-weight:400">Estoy dando / distribuyendo</span>
+            </button>
+            <button type="button" class="tipo-btn" data-tipo="necesidad"
+              style="flex:1;padding:10px 8px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg-secondary);color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">
+              🔴 Punto de necesidad<br><span style="font-size:11px;font-weight:400">Necesito / nos falta</span>
+            </button>
+          </div>
+          <input type="hidden" id="f-tipo" value="ayuda" />
           <label class="form-label">Nombre del punto *</label>
           <input class="form-input" id="f-nombre" type="text" placeholder="Ej. Acopio Parroquia San Juan" />
           <label class="form-label">Categoría *</label>
@@ -330,20 +346,21 @@ const cats = {
   combustible:  { label:'Combustible',          icon:'⛽' },
 };
 
-let map, markers = [], allPuntos = [], activeFilter = 'todos';
+let map, markers = [], allPuntos = [], activeFilter = 'todos', activeTipo = 'todos';
 let pendingLat = null, pendingLng = null;
 let searchTimeout = null;
 let pickMode = false;
 let pickMarker = null;
 
 const iconCache = {};
-function markerColor(estado) {
-  return estado === 'verified' ? '#16a34a' : estado === 'pending' ? '#ca8a04' : '#9ca3af';
+function markerColor(pt) {
+  if (pt.tipo === 'necesidad') return pt.estado === 'verified' ? '#991b1b' : '#dc2626';
+  return pt.estado === 'verified' ? '#16a34a' : pt.estado === 'pending' ? '#ca8a04' : '#9ca3af';
 }
 function createIcon(pt) {
-  const key = `${pt.categoria}-${pt.estado}`;
+  const key = `${pt.categoria}-${pt.estado}-${pt.tipo||'ayuda'}`;
   if (iconCache[key]) return iconCache[key];
-  const color = markerColor(pt.estado);
+  const color = markerColor(pt);
   const emoji = cats[pt.categoria]?.icon || '📍';
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="34" height="40" viewBox="0 0 34 40"><path d="M17 0C7.6 0 0 7.6 0 17c0 12.75 17 23 17 23S34 29.75 34 17C34 7.6 26.4 0 17 0z" fill="${color}"/><circle cx="17" cy="17" r="11" fill="white"/><text x="17" y="22" text-anchor="middle" font-size="13">${emoji}</text></svg>`;
   const icon = L.divIcon({ html: svg, className: '', iconSize: [34,40], iconAnchor: [17,40], popupAnchor: [0,-42] });
@@ -361,17 +378,22 @@ function renderMarkers() {
   markers = [];
   const q = document.getElementById('search-input').value.toLowerCase();
   const filtered = allPuntos.filter(p => {
-    const catOk = activeFilter === 'todos' || p.categoria === activeFilter;
-    const qOk = !q || p.nombre.toLowerCase().includes(q) || (p.descripcion||'').toLowerCase().includes(q) || (p.direccion||'').toLowerCase().includes(q);
-    return catOk && qOk;
+    const catOk  = activeFilter === 'todos' || p.categoria === activeFilter;
+    const tipoOk = activeTipo  === 'todos' || (p.tipo||'ayuda') === activeTipo;
+    const qOk    = !q || p.nombre.toLowerCase().includes(q) || (p.descripcion||'').toLowerCase().includes(q) || (p.direccion||'').toLowerCase().includes(q);
+    return catOk && tipoOk && qOk;
   });
   document.getElementById('counter-badge') && (document.getElementById('counter-badge').textContent = `${filtered.length} punto${filtered.length!==1?'s':''} activo${filtered.length!==1?'s':''}`);
   filtered.forEach(pt => {
     const ci = cats[pt.categoria] || {};
+    const tipoBadge = pt.tipo === 'necesidad'
+      ? '<span style="display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:500;background:#fee2e2;color:#991b1b;margin-bottom:6px">🔴 Punto de necesidad</span>'
+      : '<span style="display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:500;background:#dcfce7;color:#166534;margin-bottom:6px">🟢 Punto de ayuda</span>';
     const m = L.marker([pt.lat, pt.lng], { icon: createIcon(pt) });
     m.bindPopup(`<div class="popup-card">
       <div class="popup-name">${ci.icon||''} ${pt.nombre}</div>
       <div class="popup-type">${ci.label||pt.categoria}</div>
+      ${tipoBadge}
       ${statusBadge(pt.estado)}
       ${pt.direccion  ? `<div class="popup-row">📍 ${pt.direccion}</div>`  : ''}
       ${pt.horario    ? `<div class="popup-row">🕐 ${pt.horario}</div>`    : ''}
@@ -461,6 +483,7 @@ async function submitForm() {
   const { error } = await db.from('puntos').insert({
     nombre,
     categoria:     document.getElementById('f-categoria').value,
+    tipo:          document.getElementById('f-tipo').value,
     lat, lng,
     direccion,
     horario:       document.getElementById('f-horario').value.trim(),
@@ -501,7 +524,14 @@ function resetForm() {
   ['f-nombre','f-horario','f-telefono','f-descripcion','f-reportado','f-direccion'].forEach(id => document.getElementById(id).value = '');
   pendingLat = null; pendingLng = null;
   if (pickMarker) { map.removeLayer(pickMarker); pickMarker = null; }
-  document.getElementById('coords-badge').style.display = 'none';
+  document.getElementById('f-tipo').value = 'ayuda';
+  document.querySelectorAll('.tipo-btn').forEach(b => {
+    b.style.borderColor = 'var(--border)';
+    b.style.background  = 'var(--bg-secondary)';
+    b.style.color       = 'var(--text-muted)';
+  });
+  const ayudaBtn = document.querySelector('.tipo-btn[data-tipo="ayuda"]');
+  if (ayudaBtn) { ayudaBtn.style.borderColor='#16a34a'; ayudaBtn.style.background='#dcfce7'; ayudaBtn.style.color='#166534'; }
   document.getElementById('form-section').style.display = 'block';
   document.getElementById('submit-thanks').style.display = 'none';
   document.getElementById('submit-btn').disabled = false;
@@ -609,13 +639,47 @@ window.addEventListener('load', () => {
     exitPickModeAndReopen();
   });
 
-  // Filters
-  document.querySelectorAll('.filter-btn').forEach(btn => {
+  // Filtros de categoría
+  document.querySelectorAll('.filter-btn:not(.filter-tipo)').forEach(btn => {
     btn.addEventListener('click', function() {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       this.classList.add('active');
       activeFilter = this.dataset.cat;
+      activeTipo = 'todos';
       renderMarkers();
+    });
+  });
+
+  // Filtros de tipo
+  document.querySelectorAll('.filter-tipo').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      activeTipo = this.dataset.tipo;
+      activeFilter = 'todos';
+      renderMarkers();
+    });
+  });
+
+  // Selector tipo en formulario
+  document.querySelectorAll('.tipo-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.tipo-btn').forEach(b => {
+        b.style.borderColor = 'var(--border)';
+        b.style.background  = 'var(--bg-secondary)';
+        b.style.color       = 'var(--text-muted)';
+      });
+      const tipo = this.dataset.tipo;
+      if (tipo === 'ayuda') {
+        this.style.borderColor = '#16a34a';
+        this.style.background  = '#dcfce7';
+        this.style.color       = '#166534';
+      } else {
+        this.style.borderColor = '#dc2626';
+        this.style.background  = '#fee2e2';
+        this.style.color       = '#991b1b';
+      }
+      document.getElementById('f-tipo').value = tipo;
     });
   });
 

@@ -220,11 +220,16 @@
   function renderPuntos(puntos) {
     const el = document.getElementById('list-puntos');
     if (!puntos.length) { el.innerHTML = '<div class="empty-state">No hay puntos.</div>'; return; }
-    el.innerHTML = puntos.map(p => `
+    el.innerHTML = puntos.map(p => {
+      const tipoBadge = p.tipo === 'necesidad'
+        ? '<span class="badge" style="background:#fee2e2;color:#991b1b">🔴 Necesidad</span>'
+        : '<span class="badge" style="background:#dcfce7;color:#166534">🟢 Ayuda</span>';
+      return `
       <div class="item-card" id="punto-${p.id}">
         <div class="item-top">
           <div>
             <span class="badge badge-${p.estado}">${p.estado === 'verified' ? '🟢 Verificado' : p.estado === 'pending' ? '🟡 Por verificar' : '⚪ Antiguo'}</span>
+            ${tipoBadge}
             <div class="item-name">${cats[p.categoria] || '📍'} ${p.nombre}</div>
             <div class="item-meta">
               ${p.direccion   ? `📍 ${p.direccion}<br>` : ''}
@@ -235,11 +240,12 @@
           <div class="item-actions" style="flex-direction:column">
             ${p.estado !== 'verified' ? `<button class="btn-sm btn-green" onclick="cambiarEstado('${p.id}','verified')">✓ Verificar</button>` : ''}
             ${p.estado !== 'pending'  ? `<button class="btn-sm btn-amber" onclick="cambiarEstado('${p.id}','pending')">Pendiente</button>`  : ''}
+            ${(p.tipo||'ayuda') !== 'necesidad' ? `<button class="btn-sm" style="background:#fee2e2;color:#991b1b" onclick="cambiarTipo('${p.id}','necesidad')">🔴 Necesidad</button>` : `<button class="btn-sm" style="background:#dcfce7;color:#166534" onclick="cambiarTipo('${p.id}','ayuda')">🟢 Ayuda</button>`}
             <button class="btn-sm btn-red" onclick="eliminarPunto('${p.id}')">✗ Eliminar</button>
           </div>
         </div>
       </div>
-    `).join('');
+    `}).join('');
   }
 
   async function aprobarSubmission(subId, sub) {
@@ -260,6 +266,12 @@
   async function rechazarSubmission(subId) {
     if (!confirm('¿Rechazar esta submission?')) return;
     await db.from('submissions').update({ revisado: true }).eq('id', subId);
+    loadAll();
+  }
+
+  async function cambiarTipo(id, tipo) {
+    const { error } = await db.from('puntos').update({ tipo }).eq('id', id);
+    if (error) { alert('Error: ' + error.message); return; }
     loadAll();
   }
 
