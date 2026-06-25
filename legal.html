@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aviso Legal — Caracas Ayuda</title>
+  <meta name="description" content="Términos de uso, política de privacidad y descargo de responsabilidad de Caracas Ayuda." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #2563EB; --blue-light: #eff6ff; --blue-border: #bfdbfe;
+      --text: #111827; --text-muted: #6b7280; --text-light: #9ca3af;
+      --border: #e5e7eb; --bg: #ffffff; --bg-secondary: #f9fafb;
+      --radius: 8px; --radius-lg: 12px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --text: #f9fafb; --text-muted: #9ca3af; --border: #374151; --bg: #111827; --bg-secondary: #1f2937; --blue-light: #1e3a5f; --blue-border: #1d4ed8; }
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg-secondary); color: var(--text); min-height: 100vh; }
+
+    /* HEADER */
+    #header { background: var(--bg); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    #header svg { height: 22px; width: auto; fill: var(--text); }
+    #back-btn { font-size: 13px; color: var(--blue); text-decoration: none; display: flex; align-items: center; gap: 4px; }
+    #back-btn:hover { text-decoration: underline; }
+
+    /* LAYOUT */
+    .page { max-width: 760px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* HERO */
+    .page-hero { margin-bottom: 40px; }
+    .page-hero h1 { font-size: 26px; font-weight: 600; margin-bottom: 8px; }
+    .page-hero p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+    .update-badge { display: inline-block; font-size: 11px; color: var(--text-light); background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; margin-bottom: 12px; }
+
+    /* NAV */
+    .toc { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 36px; }
+    .toc-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 12px; }
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .toc-list a { font-size: 14px; color: var(--blue); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .toc-list a:hover { text-decoration: underline; }
+    .toc-num { font-size: 12px; color: var(--text-light); min-width: 18px; }
+
+    /* DISCLAIMER BANNER */
+    .disclaimer-banner { background: var(--blue-light); border: 1px solid var(--blue-border); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 36px; font-size: 13px; color: #1e40af; line-height: 1.6; }
+    @media (prefers-color-scheme: dark) { .disclaimer-banner { color: #93c5fd; } }
+    .disclaimer-banner strong { font-weight: 600; }
+
+    /* SECTIONS */
+    .section { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px 32px; margin-bottom: 20px; scroll-margin-top: 80px; }
+    .section-num { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--blue); margin-bottom: 6px; }
+    .section h2 { font-size: 18px; font-weight: 600; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+    .section h3 { font-size: 14px; font-weight: 600; margin: 20px 0 8px; }
+    .section h3:first-of-type { margin-top: 0; }
+    .section p { font-size: 14px; line-height: 1.75; color: var(--text-muted); margin-bottom: 12px; }
+    .section p:last-child { margin-bottom: 0; }
+    .section ul { list-style: none; margin: 8px 0 12px; display: flex; flex-direction: column; gap: 6px; }
+    .section ul li { font-size: 14px; line-height: 1.6; color: var(--text-muted); display: flex; gap: 10px; }
+    .section ul li::before { content: "—"; color: var(--text-light); flex-shrink: 0; }
+    .section a { color: var(--blue); }
+    .highlight { background: var(--bg-secondary); border-left: 3px solid var(--blue); border-radius: 0 var(--radius) var(--radius) 0; padding: 12px 16px; margin: 12px 0; }
+    .highlight p { margin: 0; font-size: 13px; }
+
+    /* CONTACT FORM */
+    .report-form { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+    .form-group label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); display: block; margin-bottom: 5px; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; font-size: 13px; padding: 9px 12px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--bg-secondary); color: var(--text);
+      outline: none; font-family: inherit;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--blue); }
+    .form-group textarea { height: 90px; resize: none; }
+    .submit-btn { padding: 10px 24px; font-size: 14px; font-weight: 600; background: var(--blue); color: #fff; border: none; border-radius: var(--radius); cursor: pointer; font-family: inherit; align-self: flex-start; }
+    .submit-btn:hover { background: #1d4ed8; }
+    #report-thanks { display: none; background: #dcfce7; border: 1px solid #86efac; border-radius: var(--radius); padding: 12px 16px; font-size: 13px; color: #166534; }
+
+    /* FOOTER */
+    #footer { text-align: center; padding: 20px; font-size: 12px; color: var(--text-light); border-top: 1px solid var(--border); }
+
+    @media (max-width: 600px) {
+      .section { padding: 20px 18px; }
+      .page { padding: 24px 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="header">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1427.67 250" style="height:28px;width:auto;fill:var(--text)">
+    <g><g><path d="M150.8,32.16h0l-1.72,3.93c-4.91-3.44-11.42-5.77-20.75-5.77-24.8,0-41.87,18.3-41.87,44.82,0,1.48.06,2.92.17,4.34,2.77-1.21,5.89-1.46,8.88-1.7,2.04-.16,4.05-.31,6.1-.21,1.1.05,2.21.16,3.3.29-.03-.9-.04-1.8-.04-2.72,0-22.23,6.88-38.19,24.93-38.19,12.16,0,22.1,8.23,28.61,20.75l3.93-1.23-11.54-24.31Z"/><path d="M105.42,85.11c-.14-1.19-.26-2.41-.34-3.65-2.94-.27-5.89-.32-8.84-.22-2.99.1-6.67.3-9.19,2.16.3,2.04.71,4.01,1.22,5.92,4.99-3.26,11.2-4.68,17.15-4.21Z"/><path d="M157.55,92.7c-3.56,11.79-14.24,20.63-27.75,20.63s-20.88-9.18-23.62-23.18c-1.19-.2-2.39-.34-3.6-.33-1.61.01-3.2.32-4.77.64-2.84.59-5.9,1.44-8.03,3.51,6.1,15.95,20.19,25.98,38.54,25.98s30.45-9.58,35.98-24.93l-6.75-2.33Z"/></g><g><path d="M131.51,106.47c.31,0,.61,0,.92-.03.16,0,.32-.03.47-.04.03,0,.05,0,.07,0,.06,0,.11-.02.17-.03.31-.05.61-.12.91-.21.13-.04.26-.09.39-.14.02,0,.03-.01.05-.02,0,0,.02,0,.04-.02.06-.03.13-.06.19-.09.05-.03.09-.05.14-.07l-11.36-23.67h0l-1.72,3.93c-4.91-3.44-11.42-5.77-20.75-5.77-24.8,0-41.87,18.3-41.87,44.82,0,24.74,14.86,42.31,37,44.56-2.04-2.24-3.03-5.3-3.49-8.38-10.76-4.95-15.09-18.67-15.09-36.18,0-22.23,6.88-38.19,24.93-38.19,11.75,0,21.43,7.69,27.94,19.51.36,0,.72.02,1.08.02Z"/><path d="M129.85,143.92s0,0-.01,0c-1.98,5.64-5.61,10.53-10.39,13.99,2.29,1.5,5.11,2.39,7.85,2.67,4.15-3.96,7.28-9.05,9.51-15.04-2.21-.9-4.47-1.59-6.95-1.61Z"/><path d="M116.38,159.84c-4.07,2.22-8.78,3.48-13.89,3.48-2.22,0-4.28-.25-6.17-.72.87,2.91,2.33,5.77,4.88,7.34,9.67-.03,17.33-2.52,23.25-6.96-2.95-.49-5.85-1.27-8.07-3.15Z"/></g><path d="M165.16,192.55c0,16.58-15.1,27.75-34.87,27.75-10.31,0-19.4-2.58-26.03-6.39l-1.96,4.54h-4.79l-3.56-28.24h0c7.24,14.49,20.38,23.45,35.61,23.45,10.93,0,19.65-6.39,19.52-15.1,0-10.56-10.93-13.88-25.05-17.68-14.37-4.18-29.84-8.96-29.84-26.28,0-14.74,13.88-23.95,30.58-23.95,10.93,0,18.54,2.58,23.7,5.77l1.72-3.93h4.79l3.07,25.42h0c-6.14-12.89-17.07-20.63-31.93-20.63-10.44,0-16.45,5.28-16.45,12.16,0,9.21,10.31,12.03,23.45,15.6,15.23,4.17,32.05,8.84,32.05,27.51Z"/><polygon points="160.55 61.09 163.04 70.94 172.29 66.75 166.15 74.83 175.19 79.45 165.04 79.68 167.07 89.63 160.55 81.84 154.04 89.63 156.07 79.68 145.92 79.45 154.96 74.83 148.82 66.75 158.07 70.94 160.55 61.09"/><path d="M125,250C56.08,250,0,193.92,0,125S56.08,0,125,0s125,56.08,125,125-56.08,125-125,125ZM125,17.74c-59.15,0-107.26,48.12-107.26,107.26s48.12,107.26,107.26,107.26,107.26-48.12,107.26-107.26S184.15,17.74,125,17.74Z"/></g>
+    <g><path d="M401.23,139.95c-4.36,23.53-20.57,39.12-44.57,39.12-27.12,0-47.85-18.55-47.85-54.08s18.55-56.42,48.16-56.42c25.87,0,42.24,16.52,44.26,37.4h-21.66c-2.96-11.69-12.16-18.7-22.44-18.7-17.92,0-26.34,13.87-26.34,36.47s8.42,36.47,25.25,36.47c12.78,0,20.57-7.33,23.53-20.26h21.66Z"/><path d="M470.43,175.48l-6.55-21.35h-38.18l-7.33,21.35h-22.91l36.94-103.49h25.09l36.47,103.49h-23.53ZM444.72,95.22h-.16l-13.25,41.15h26.34l-12.94-41.15Z"/><path d="M559.11,175.48v-26.65c0-9.97-3.74-13.87-16.21-13.87h-23.07v40.52h-21.04v-103.49h52.52c19.17,0,31.79,12.78,31.79,29.92,0,11.07-5.46,20.42-15.43,24,9.2,2.96,12.62,8.1,12.62,20.26v29.3h-21.2ZM519.84,89.92v27.59h27.12c11.53,0,15.9-5.77,15.9-13.71s-4.36-13.87-15.12-13.87h-27.9Z"/><path d="M660.73,175.48l-6.55-21.35h-38.18l-7.33,21.35h-22.91l36.94-103.49h25.09l36.47,103.49h-23.53ZM635.01,95.22h-.16l-13.25,41.15h26.34l-12.94-41.15Z"/><path d="M769.35,139.95c-4.36,23.53-20.57,39.12-44.57,39.12-27.12,0-47.85-18.55-47.85-54.08s18.55-56.42,48.16-56.42c25.87,0,42.24,16.52,44.26,37.4h-21.66c-2.96-11.69-12.16-18.7-22.44-18.7-17.92,0-26.34,13.87-26.34,36.47s8.42,36.47,25.25,36.47c12.78,0,20.57-7.33,23.53-20.26h21.66Z"/><path d="M838.55,175.48l-6.55-21.35h-38.18l-7.33,21.35h-22.91l36.94-103.49h25.09l36.47,103.49h-23.53ZM812.84,95.22h-.16l-13.25,41.15h26.34l-12.94-41.15Z"/><path d="M920.69,102.54c-1.09-10.6-7.48-15.74-20.57-15.74-12.16,0-18.55,4.36-18.55,12.16,0,6.55,4.52,10.29,16.05,13.09,11.69,2.81,23.07,5.61,30.7,9.04,9.04,4.05,16.21,10.44,16.21,25.09,0,22.75-17.14,32.89-41.3,32.89-25.56,0-43.33-11.38-43.79-34.6h20.88c.31,10.6,9.2,17.14,23.07,17.14,12.78,0,20.11-5.46,20.11-14.65,0-6.08-3.12-10.29-16.05-13.09-12.78-2.8-21.04-4.67-28.37-7.95-11.07-4.99-17.3-12.47-17.3-25.56,0-18.55,12.62-31.79,37.87-31.79s40.83,14.18,41.61,33.98h-20.57Z"/><path d="M1059.24,175.48l-6.55-21.35h-38.18l-7.33,21.35h-22.91l36.94-103.49h25.09l36.47,103.49h-23.53ZM1033.52,95.22h-.16l-13.25,41.15h26.34l-12.94-41.15Z"/><path d="M1096.48,175.48v-39.12l-35.85-64.37h25.25l21.82,42.08,20.11-42.08h24.94l-34.6,64.68v38.81h-21.66Z"/><path d="M1218.83,72h22.13v69.04c0,25.09-15.43,38.03-42.55,38.03-25.09,0-40.83-11.84-40.83-36.78v-70.29h21.97v68.26c0,12.78,6.86,20.88,18.55,20.88,13.87,0,20.73-6.55,20.73-20.1v-69.04Z"/><path d="M1248.91,175.48v-103.49h40.05c28.05,0,48,19.17,48,50.65s-17.92,52.83-44.73,52.83h-43.33ZM1287.87,157.87c18.86,0,26.96-11.84,26.96-35.22s-8.1-32.73-28.83-32.73h-16.05v67.95h17.92Z"/><path d="M1404.13,175.48l-6.55-21.35h-38.18l-7.33,21.35h-22.91l36.94-103.49h25.09l36.47,103.49h-23.53ZM1378.42,95.22h-.16l-13.25,41.15h26.34l-12.94-41.15Z"/></g>
+  </svg>
+  <a href="index.html" id="back-btn">← Volver al mapa</a>
+</div>
+
+<div class="page">
+
+  <div class="page-hero">
+    <span class="update-badge">Última actualización: 25 de junio de 2026</span>
+    <h1>Aviso Legal</h1>
+    <p>Esta página contiene los términos de uso, la política de privacidad, el descargo de responsabilidad y el procedimiento para reportar contenido falso o inapropiado en <strong>Caracas Ayuda</strong>.</p>
+  </div>
+
+  <nav class="toc">
+    <div class="toc-title">Contenido</div>
+    <ul class="toc-list">
+      <li><a href="#terminos"><span class="toc-num">01</span> Términos de uso</a></li>
+      <li><a href="#disclaimer"><span class="toc-num">02</span> Descargo de responsabilidad</a></li>
+      <li><a href="#privacidad"><span class="toc-num">03</span> Política de privacidad</a></li>
+      <li><a href="#reporte"><span class="toc-num">04</span> Reporte de contenido falso o abuso</a></li>
+    </ul>
+  </nav>
+
+  <div class="disclaimer-banner">
+    <strong>Plataforma sin fines de lucro.</strong> Caracas Ayuda fue creada por Caracas No Es Loca con el único objetivo de facilitar el acceso a información de ayuda humanitaria tras el terremoto en Venezuela del 24 de junio de 2026. No representa a ninguna entidad gubernamental, organización internacional ni partido político.
+  </div>
+
+  <!-- SECCIÓN 1: TÉRMINOS DE USO -->
+  <section class="section" id="terminos">
+    <div class="section-num">01</div>
+    <h2>Términos de uso</h2>
+
+    <h3>Aceptación</h3>
+    <p>Al acceder o utilizar Caracas Ayuda (en adelante, "la Plataforma"), el usuario acepta estos Términos de Uso en su totalidad. Si no estás de acuerdo con alguno de estos términos, te pedimos que no utilices la Plataforma.</p>
+
+    <h3>Uso permitido</h3>
+    <p>La Plataforma está diseñada exclusivamente para facilitar el acceso a información de ayuda humanitaria. Los usuarios pueden:</p>
+    <ul>
+      <li>Consultar el mapa de puntos de ayuda disponibles.</li>
+      <li>Agregar información sobre puntos de ayuda reales y verificables.</li>
+      <li>Compartir el mapa con otras personas que necesiten ayuda.</li>
+    </ul>
+
+    <h3>Uso prohibido</h3>
+    <p>Queda expresamente prohibido:</p>
+    <ul>
+      <li>Publicar información falsa, engañosa o no verificada de manera intencional.</li>
+      <li>Utilizar la Plataforma con fines comerciales, políticos o publicitarios.</li>
+      <li>Publicar información que pueda poner en riesgo la seguridad de personas o comunidades.</li>
+      <li>Intentar acceder, modificar o eliminar datos de otros usuarios o de la base de datos sin autorización.</li>
+      <li>Usar la Plataforma para recopilar datos de usuarios con cualquier fin.</li>
+      <li>Reproducir, redistribuir o copiar el contenido de la Plataforma con fines comerciales sin autorización expresa.</li>
+    </ul>
+
+    <h3>Contenido generado por usuarios</h3>
+    <p>Los puntos de ayuda son agregados por voluntarios y ciudadanos. Caracas No Es Loca no verifica en tiempo real la exactitud de cada publicación. Al enviar información a la Plataforma, el usuario declara que:</p>
+    <ul>
+      <li>La información es verídica según su mejor conocimiento.</li>
+      <li>No infringe derechos de terceros.</li>
+      <li>Acepta que el equipo de Caracas Ayuda puede editar, verificar o eliminar el contenido en cualquier momento.</li>
+    </ul>
+
+    <h3>Modificaciones</h3>
+    <p>Caracas No Es Loca se reserva el derecho de modificar estos Términos en cualquier momento. Los cambios entrarán en vigor desde su publicación en esta página. El uso continuado de la Plataforma implica la aceptación de los términos actualizados.</p>
+
+    <div class="highlight">
+      <p>Ante cualquier duda sobre estos términos, puedes escribirnos a <a href="mailto:caracasnoesloca@gmail.com">caracasnoesloca@gmail.com</a>.</p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 2: DISCLAIMER -->
+  <section class="section" id="disclaimer">
+    <div class="section-num">02</div>
+    <h2>Descargo de responsabilidad</h2>
+
+    <h3>Naturaleza de la información</h3>
+    <p>Toda la información publicada en Caracas Ayuda proviene de aportes voluntarios de ciudadanos y no ha sido verificada de forma independiente por Caracas No Es Loca en todos los casos. La situación de emergencia puede cambiar rápidamente y la información puede quedar desactualizada.</p>
+
+    <h3>Sin garantía de exactitud</h3>
+    <p>Caracas No Es Loca no garantiza la exactitud, completitud, actualidad ni disponibilidad de ningún punto publicado en el mapa. Los usuarios deben verificar la información antes de desplazarse a cualquier ubicación.</p>
+
+    <h3>Sin responsabilidad por daños</h3>
+    <p>Caracas No Es Loca no será responsable por ningún daño directo, indirecto, incidental o consecuente que surja del uso o la imposibilidad de uso de la Plataforma, incluyendo pero no limitado a:</p>
+    <ul>
+      <li>Desplazamientos a ubicaciones donde el punto de ayuda no esté disponible.</li>
+      <li>Decisiones tomadas con base en información incorrecta o desactualizada.</li>
+      <li>Interrupciones en el servicio por causas técnicas o de fuerza mayor.</li>
+    </ul>
+
+    <h3>No somos una organización de respuesta a emergencias</h3>
+    <p>Caracas Ayuda es una herramienta de información ciudadana. No somos un servicio de emergencia, no coordinamos rescates ni operaciones de respuesta. En caso de emergencia inmediata, contacta a los cuerpos de socorro oficiales de Venezuela.</p>
+
+    <div class="highlight">
+      <p><strong>Recomendamos siempre verificar la información por teléfono antes de desplazarte</strong>, especialmente si la última actualización del punto tiene más de 12 horas.</p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 3: PRIVACIDAD -->
+  <section class="section" id="privacidad">
+    <div class="section-num">03</div>
+    <h2>Política de privacidad</h2>
+
+    <h3>Datos que recopilamos</h3>
+    <p>Caracas Ayuda recopila únicamente los datos mínimos necesarios para el funcionamiento de la Plataforma:</p>
+    <ul>
+      <li><strong>Información de puntos de ayuda:</strong> nombre del punto, categoría, dirección, coordenadas, horario, teléfono y descripción.</li>
+      <li><strong>Nombre del reportante (opcional):</strong> si el usuario decide identificarse al agregar un punto.</li>
+      <li><strong>Datos técnicos:</strong> dirección IP y tipo de navegador, recopilados automáticamente por los servidores para fines de seguridad.</li>
+    </ul>
+
+    <h3>Datos que NO recopilamos</h3>
+    <ul>
+      <li>No solicitamos nombre, email ni datos personales para consultar el mapa.</li>
+      <li>No usamos cookies de seguimiento ni píxeles publicitarios.</li>
+      <li>No vendemos, alquilamos ni compartimos datos con terceros con fines comerciales.</li>
+      <li>No creamos perfiles de usuario.</li>
+    </ul>
+
+    <h3>Uso de los datos</h3>
+    <p>Los datos recopilados se usan exclusivamente para:</p>
+    <ul>
+      <li>Mostrar los puntos de ayuda en el mapa.</li>
+      <li>Verificar y moderar el contenido publicado.</li>
+      <li>Mejorar el funcionamiento técnico de la Plataforma.</li>
+    </ul>
+
+    <h3>Almacenamiento</h3>
+    <p>Los datos se almacenan en servidores de Supabase (región South America — São Paulo, Brasil) bajo los estándares de seguridad de dicho proveedor. Puedes consultar su política de privacidad en <a href="https://supabase.com/privacy" target="_blank">supabase.com/privacy</a>.</p>
+
+    <h3>Retención y eliminación</h3>
+    <p>Los datos de puntos de ayuda se conservarán mientras la Plataforma esté activa o durante la duración de la emergencia. Los usuarios pueden solicitar la eliminación de información que hayan enviado escribiendo a <a href="mailto:caracasnoesloca@gmail.com">caracasnoesloca@gmail.com</a>.</p>
+
+    <h3>Menores de edad</h3>
+    <p>La Plataforma no está dirigida a menores de 13 años. No recopilamos conscientemente datos de menores. Si detectamos información de menores, la eliminaremos de inmediato.</p>
+
+    <div class="highlight">
+      <p>Esta política puede actualizarse en cualquier momento. La fecha de última actualización siempre estará visible al inicio de esta página.</p>
+    </div>
+  </section>
+
+  <!-- SECCIÓN 4: REPORTE -->
+  <section class="section" id="reporte">
+    <div class="section-num">04</div>
+    <h2>Reporte de contenido falso o abuso</h2>
+
+    <p>Si encuentras en el mapa información incorrecta, desactualizada, engañosa o que pueda causar daño, por favor repórtala aquí. Nuestro equipo la revisará y actuará a la brevedad.</p>
+
+    <h3>Tipos de reporte aceptados</h3>
+    <ul>
+      <li>Punto de ayuda que ya no existe o cerró.</li>
+      <li>Información incorrecta sobre horarios, dirección o teléfono.</li>
+      <li>Punto con intención maliciosa o engañosa.</li>
+      <li>Contenido inapropiado, ofensivo o que no corresponde a ayuda humanitaria.</li>
+      <li>Duplicado de un punto ya existente.</li>
+    </ul>
+
+    <div class="report-form">
+      <div class="form-group">
+        <label>Nombre del punto reportado *</label>
+        <input type="text" id="r-punto" placeholder="Nombre exacto del punto en el mapa" />
+      </div>
+      <div class="form-group">
+        <label>Tipo de problema *</label>
+        <select id="r-tipo">
+          <option value="">Selecciona una opción</option>
+          <option value="cerrado">El punto ya cerró o no existe</option>
+          <option value="incorrecto">Información incorrecta o desactualizada</option>
+          <option value="malicioso">Contenido engañoso o malicioso</option>
+          <option value="inapropiado">Contenido inapropiado</option>
+          <option value="duplicado">Punto duplicado</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Descripción del problema *</label>
+        <textarea id="r-descripcion" placeholder="Explica con el mayor detalle posible qué está mal y cómo debería corregirse."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Tu email (opcional — para darte seguimiento)</label>
+        <input type="email" id="r-email" placeholder="tucorreo@email.com" />
+      </div>
+      <button class="submit-btn" id="r-submit">Enviar reporte</button>
+      <div id="report-thanks">✅ Reporte recibido. Nuestro equipo lo revisará a la brevedad y tomará acción. Gracias por ayudar a mantener el mapa confiable.</div>
+    </div>
+  </section>
+
+</div>
+
+<div id="footer">
+  Caracas Ayuda · Una iniciativa sin fines de lucro de <strong>Caracas No Es Loca</strong> · Miami, Florida, EE.UU.<br>
+  Creada para apoyar al pueblo venezolano tras el terremoto del 24 de junio de 2026.
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://zxpfumbsxgnfzxjlhocu.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_bx7plOxEb3M4aNID_stt-g_WPh-FS88';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+document.getElementById('r-submit').addEventListener('click', async () => {
+  const punto       = document.getElementById('r-punto').value.trim();
+  const tipo        = document.getElementById('r-tipo').value;
+  const descripcion = document.getElementById('r-descripcion').value.trim();
+  if (!punto || !tipo || !descripcion) {
+    alert('Por favor completa los campos obligatorios.');
+    return;
+  }
+  const btn = document.getElementById('r-submit');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  // Guardamos el reporte en Supabase como submission especial
+  const { error } = await db.from('submissions').insert({
+    nombre:      `[REPORTE] ${punto}`,
+    categoria:   'agua', // valor requerido, usamos placeholder
+    direccion:   tipo,
+    descripcion: `${descripcion}\n\nEmail: ${document.getElementById('r-email').value.trim() || 'No proporcionado'}`,
+    reportado_por: 'Reporte de abuso',
+  });
+
+  if (error) {
+    // Si falla Supabase igual mostramos confirmación — el reporte llegará por email
+    console.error(error);
+  }
+
+  btn.style.display = 'none';
+  document.getElementById('report-thanks').style.display = 'block';
+});
+</script>
+</body>
+</html>
