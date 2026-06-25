@@ -81,7 +81,7 @@
     #pick-overlay.active { display: block; pointer-events: none; }
     #pick-banner { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); background: rgba(37,99,235,0.88); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); color: #fff; font-size: 14px; font-weight: 500; padding: 12px 22px; border-radius: 28px; white-space: nowrap; box-shadow: 0 4px 20px rgba(37,99,235,0.5); display: flex; align-items: center; gap: 12px; pointer-events: all; border: 1px solid rgba(255,255,255,0.2); }
     #pick-cancel { background: rgba(255,255,255,0.2); border: none; color: #fff; font-size: 13px; font-weight: 500; padding: 5px 14px; border-radius: 14px; cursor: pointer; }
-    #btn-locate { position: absolute; top: 14px; left: 14px; width: 40px; height: 40px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 50%; box-shadow: var(--glass-shadow); cursor: pointer; z-index: 999; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: transform 0.15s; }
+    #btn-locate { position: absolute; top: 14px; left: 14px; width: 40px; height: 40px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 50%; box-shadow: var(--glass-shadow); cursor: pointer; z-index: 998; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: transform 0.15s; }
     #btn-locate:hover { transform: scale(1.08); }
     .dir-wrap { position: relative; }
     #btn-pick-map { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: rgba(37,99,235,0.1); border: 1px solid rgba(37,99,235,0.25); color: var(--blue); font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
@@ -160,7 +160,20 @@
       #logo-block { flex: 1; }
       #btn-add { flex-shrink: 0; }
       #search-wrap { order: 3; flex: 1 1 100%; }
-      #side-panel { width: calc(100% - 20px); top: auto; bottom: 10px; right: 10px; max-height: 70vh; }
+      #side-panel {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-height: 80vh;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+        display: block !important;
+      }
+      #side-panel.open { transform: translateY(0); }
       #list-panel { width: calc(100% - 20px); }
     }
   </style>
@@ -180,7 +193,7 @@
         <button id="search-clear">×</button>
         <div id="search-results"></div>
       </div>
-      <button id="btn-add">+ Agregar Punto</button>
+      <button id="btn-add">+ Agregar</button>
     </div>
     <div id="filters">
       <button class="filter-btn active" data-cat="todos">Todos</button>
@@ -200,7 +213,7 @@
 
   <div id="banner">
     <div id="banner-text">
-      ℹ️ &nbsp;<strong>¿Necesitas ayuda o sabes dónde están ayudando?</strong> Agrega puntos de ayuda, centros de acopio, refugios, medicamentos y más, o reporta lo que se necesita en tu zona. Los puntos de ayuda se muestran por 72h y los de necesidad por 24h para mantener la información actualizada. Creado sin fines de lucro por <strong>Caracas Merch</strong>.
+      ℹ️ &nbsp;<strong>¿Necesitas ayuda o sabes dónde están ayudando?</strong> Agrega puntos de ayuda, centros de acopio, refugios, agua, medicamentos y más, o reporta lo que se necesita en tu zona. La información la construye la comunidad: verifica antes de desplazarte. Creado sin fines de lucro por <strong>Caracas Merch</strong>.
     </div>
     <button id="banner-close" aria-label="Cerrar">×</button>
   </div>
@@ -587,9 +600,10 @@ window.addEventListener('load', () => {
   map = L.map('map', { zoomControl: false, doubleClickZoom: false }).setView([10.49, -66.90], 12);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors', maxZoom: 19 }).addTo(map);
   L.control.zoom({ position: 'bottomleft' }).addTo(map);
-  
+
+  // Sticky banner — calcula altura del topbar dinámicamente
   const topbarH = document.getElementById('topbar').offsetHeight;
-document.documentElement.style.setProperty('--topbar-height', topbarH + 'px');
+  document.documentElement.style.setProperty('--topbar-height', topbarH + 'px');
 
   loadPuntos();
   setTimeout(() => { document.getElementById('loading').style.display = 'none'; }, 5000);
