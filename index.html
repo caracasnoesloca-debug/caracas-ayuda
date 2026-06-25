@@ -143,12 +143,29 @@
     #dblclick-hint { position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: #fff; font-size: 12px; padding: 6px 14px; border-radius: 20px; z-index: 999; pointer-events: none; white-space: nowrap; opacity: 0; transition: opacity 0.3s; }
     #dblclick-hint.show { opacity: 1; }
 
-    /* LEYENDA */
-    #legend { position: absolute; bottom: 36px; right: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 7px 12px; font-size: 12px; color: var(--text-muted); z-index: 999; display: flex; flex-direction: column; gap: 5px; }
-    .legend-item { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    /* LEYENDA INTERACTIVA */
+    #legend { position: absolute; bottom: 36px; right: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); font-size: 12px; color: var(--text-muted); z-index: 999; display: flex; flex-direction: column; overflow: hidden; }
+    .legend-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; cursor: pointer; transition: background 0.1s; border-bottom: 0.5px solid var(--border); white-space: nowrap; }
+    .legend-item:last-child { border-bottom: none; }
+    .legend-item:hover { background: var(--bg-secondary); }
     .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .legend-dot.green { background: #16a34a; }
-    .legend-dot.amber { background: #ca8a04; }
+    .legend-count { margin-left: auto; font-weight: 600; font-size: 13px; padding-left: 10px; }
+    .legend-count.blue { color: #2563EB; }
+    .legend-count.red  { color: #dc2626; }
+
+    /* PANEL DE LISTA */
+    #list-panel { position: absolute; bottom: 36px; right: 10px; width: 300px; max-height: 420px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); z-index: 1000; display: none; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+    #list-panel.open { display: flex; }
+    #list-panel-header { padding: 12px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    #list-panel-title { font-size: 13px; font-weight: 600; }
+    #list-panel-close { background: none; border: none; font-size: 18px; color: var(--text-muted); cursor: pointer; line-height: 1; }
+    #list-panel-body { overflow-y: auto; flex: 1; }
+    .list-punto { padding: 11px 14px; border-bottom: 0.5px solid var(--border); }
+    .list-punto:last-child { border-bottom: none; }
+    .list-punto-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .list-punto-meta { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; line-height: 1.4; }
+    .list-punto-btn { display: inline-block; padding: 4px 10px; background: var(--blue); color: #fff; border: none; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; text-decoration: none; }
+    .list-empty { padding: 24px; text-align: center; font-size: 13px; color: var(--text-muted); }
 
     /* SIDE PANEL */
     #side-panel { position: absolute; top: 10px; right: 10px; width: 290px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); z-index: 999; display: none; max-height: calc(100% - 20px); overflow-y: auto; box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
@@ -255,8 +272,24 @@
       </div>
     </div>
     <div id="legend">
-      <div class="legend-item"><span class="legend-dot" style="background:#2563EB"></span> Punto de ayuda</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#dc2626"></span> Punto de necesidad</div>
+      <div class="legend-item" id="legend-ayuda">
+        <span class="legend-dot" style="background:#2563EB"></span>
+        Puntos de ayuda
+        <span class="legend-count blue" id="count-ayuda">0</span>
+      </div>
+      <div class="legend-item" id="legend-necesidad">
+        <span class="legend-dot" style="background:#dc2626"></span>
+        Puntos de necesidad
+        <span class="legend-count red" id="count-necesidad">0</span>
+      </div>
+    </div>
+
+    <div id="list-panel">
+      <div id="list-panel-header">
+        <span id="list-panel-title">Puntos de ayuda</span>
+        <button id="list-panel-close">×</button>
+      </div>
+      <div id="list-panel-body"></div>
     </div>
     <div id="dblclick-hint">📍 Punto agregado al mapa — haz doble click en cualquier lugar</div>
 
@@ -405,6 +438,12 @@ function renderMarkers() {
     return catOk && tipoOk && qOk;
   });
   document.getElementById('counter-badge') && (document.getElementById('counter-badge').textContent = `${filtered.length} punto${filtered.length!==1?'s':''} activo${filtered.length!==1?'s':''}`);
+
+  // Actualizar contadores de leyenda
+  const totalAyuda     = allPuntos.filter(p => (p.tipo||'ayuda') === 'ayuda').length;
+  const totalNecesidad = allPuntos.filter(p => p.tipo === 'necesidad').length;
+  document.getElementById('count-ayuda').textContent     = totalAyuda;
+  document.getElementById('count-necesidad').textContent = totalNecesidad;
   filtered.forEach(pt => {
     const ci = cats[pt.categoria] || {};
     const tipoBadge = pt.tipo === 'necesidad'
@@ -744,7 +783,41 @@ window.addEventListener('load', () => {
     if (!e.target.closest('#search-wrap')) document.getElementById('search-results').style.display = 'none';
   });
 
-  // Panel open/close
+  // List panel — leyenda clickeable
+  function openListPanel(tipo) {
+    const puntos = allPuntos.filter(p => (p.tipo||'ayuda') === tipo);
+    const title  = tipo === 'ayuda' ? '🔵 Puntos de ayuda' : '🔴 Puntos de necesidad';
+    document.getElementById('list-panel-title').textContent = title;
+    const body = document.getElementById('list-panel-body');
+    if (!puntos.length) {
+      body.innerHTML = `<div class="list-empty">No hay puntos de ${tipo} aún.</div>`;
+    } else {
+      body.innerHTML = puntos.map(p => {
+        const ci = cats[p.categoria] || {};
+        return `<div class="list-punto">
+          <div class="list-punto-name">${ci.icon||'📍'} ${p.nombre}</div>
+          <div class="list-punto-meta">
+            ${ci.label||p.categoria}
+            ${p.direccion ? ` · ${p.direccion}` : ''}
+            ${p.horario   ? `<br>🕐 ${p.horario}` : ''}
+          </div>
+          <a class="list-punto-btn" href="https://maps.google.com/?q=${p.lat},${p.lng}" target="_blank">Cómo llegar →</a>
+        </div>`;
+      }).join('');
+    }
+    // Mover list-panel encima de la leyenda
+    document.getElementById('list-panel').classList.add('open');
+    document.getElementById('legend').style.display = 'none';
+  }
+
+  function closeListPanel() {
+    document.getElementById('list-panel').classList.remove('open');
+    document.getElementById('legend').style.display = 'flex';
+  }
+
+  document.getElementById('legend-ayuda').addEventListener('click',    () => openListPanel('ayuda'));
+  document.getElementById('legend-necesidad').addEventListener('click', () => openListPanel('necesidad'));
+  document.getElementById('list-panel-close').addEventListener('click', closeListPanel);
   document.getElementById('btn-add').addEventListener('click', () => {
     document.getElementById('side-panel').classList.toggle('open');
     document.getElementById('form-section').style.display = 'block';
