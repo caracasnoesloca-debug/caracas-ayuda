@@ -257,8 +257,6 @@
     <div id="legend">
       <div class="legend-item"><span class="legend-dot" style="background:#2563EB"></span> Punto de ayuda</div>
       <div class="legend-item"><span class="legend-dot" style="background:#dc2626"></span> Punto de necesidad</div>
-      <div class="legend-item"><span class="legend-dot green"></span> Verificado</div>
-      <div class="legend-item"><span class="legend-dot amber"></span> Por verificar</div>
     </div>
     <div id="dblclick-hint">📍 Punto agregado al mapa — haz doble click en cualquier lugar</div>
 
@@ -378,8 +376,7 @@ let pickMarker = null;
 
 const iconCache = {};
 function markerColor(pt) {
-  if (pt.tipo === 'necesidad') return pt.estado === 'verified' ? '#991b1b' : '#dc2626';
-  return pt.estado === 'verified' ? '#16a34a' : pt.estado === 'pending' ? '#ca8a04' : '#9ca3af';
+  return (pt.tipo === 'necesidad') ? '#dc2626' : '#2563EB';
 }
 function createIcon(pt) {
   const key = `${pt.categoria}-${pt.estado}-${pt.tipo||'ayuda'}`;
