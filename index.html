@@ -58,17 +58,20 @@
     #map { width: 100%; height: 100%; }
     #map.picking { cursor: crosshair !important; }
 
-    /* PICK MODE OVERLAY */
+    /* Mover zoom control a la izquierda abajo, lejos del panel */
+    .leaflet-top.leaflet-left { top: auto; bottom: 40px; }
+
+    /* PICK MODE — oculta panel completamente y muestra banner */
     #pick-overlay { position: absolute; inset: 0; z-index: 1500; pointer-events: none; display: none; }
     #pick-overlay.active { display: block; pointer-events: none; }
-    #pick-banner { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: #2563EB; color: #fff; font-size: 13px; font-weight: 500; padding: 9px 20px; border-radius: 24px; white-space: nowrap; box-shadow: 0 4px 12px rgba(37,99,235,0.4); display: flex; align-items: center; gap: 10px; pointer-events: all; }
-    #pick-cancel { background: rgba(255,255,255,0.2); border: none; color: #fff; font-size: 12px; padding: 3px 10px; border-radius: 12px; cursor: pointer; }
+    #pick-banner { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: #2563EB; color: #fff; font-size: 14px; font-weight: 500; padding: 12px 22px; border-radius: 28px; white-space: nowrap; box-shadow: 0 4px 16px rgba(37,99,235,0.5); display: flex; align-items: center; gap: 12px; pointer-events: all; }
+    #pick-cancel { background: rgba(255,255,255,0.25); border: none; color: #fff; font-size: 13px; font-weight: 500; padding: 5px 14px; border-radius: 14px; cursor: pointer; }
 
     /* DIR FIELD with pick button */
     .dir-wrap { position: relative; }
-    #btn-pick-map { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: var(--blue-light); border: 1px solid #bfdbfe; color: var(--blue); font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
+    #btn-pick-map { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: var(--blue-light); border: 1px solid #bfdbfe; color: var(--blue); font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
     #btn-pick-map:hover { background: #dbeafe; }
-    #f-direccion { padding-right: 90px; }
+    #f-direccion { padding-right: 95px; }
 
     /* HINT */
     #dblclick-hint { position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: #fff; font-size: 12px; padding: 6px 14px; border-radius: 20px; z-index: 999; pointer-events: none; white-space: nowrap; opacity: 0; transition: opacity 0.3s; }
@@ -86,9 +89,9 @@
     #panel-body { padding: 16px; }
     .form-label { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px; margin-top: 12px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 500; }
     .form-label:first-child { margin-top: 0; }
-    .form-input { width: 100%; font-size: 13px; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-secondary); color: var(--text); outline: none; font-family: inherit; }
+    .form-input { width: 100%; font-size: 16px; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-secondary); color: var(--text); outline: none; font-family: inherit; }
     .form-input:focus { border-color: var(--blue); }
-    textarea.form-input { height: 65px; resize: none; }
+    textarea.form-input { height: 65px; resize: none; font-size: 16px; }
     #coords-badge { font-size: 11px; color: var(--green); background: #dcfce7; padding: 3px 8px; border-radius: 6px; display: none; margin-top: 4px; }
     #submit-btn { margin-top: 16px; width: 100%; padding: 10px; font-size: 14px; font-weight: 600; background: var(--blue); color: #fff; border: none; border-radius: var(--radius); cursor: pointer; font-family: inherit; }
     #submit-btn:hover { background: var(--blue-dark); }
@@ -319,21 +322,21 @@ async function loadPuntos() {
   renderMarkers();
 }
 
-// PICK MODE — selección de punto en el mapa
+// PICK MODE — oculta panel, activa crosshair
 function enterPickMode() {
   pickMode = true;
   map.getContainer().classList.add('picking');
   document.getElementById('pick-overlay').classList.add('active');
-  document.getElementById('side-panel').style.opacity = '0.3';
-  document.getElementById('side-panel').style.pointerEvents = 'none';
+  // Ocultar panel completamente para ver el mapa limpio
+  document.getElementById('side-panel').classList.remove('open');
 }
 
 function exitPickMode() {
   pickMode = false;
   map.getContainer().classList.remove('picking');
   document.getElementById('pick-overlay').classList.remove('active');
-  document.getElementById('side-panel').style.opacity = '1';
-  document.getElementById('side-panel').style.pointerEvents = '';
+  // Reabrir el panel
+  document.getElementById('side-panel').classList.add('open');
 }
 
 async function reverseGeocode(lat, lng) {
@@ -348,30 +351,26 @@ async function reverseGeocode(lat, lng) {
 
 function setPickedLocation(lat, lng) {
   pendingLat = lat; pendingLng = lng;
-  // Mostrar marcador temporal
   if (pickMarker) map.removeLayer(pickMarker);
   pickMarker = L.marker([lat, lng], {
     icon: L.divIcon({
-      html: `<div style="width:20px;height:20px;background:#2563EB;border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(37,99,235,0.5)"></div>`,
-      className: '', iconSize: [20,20], iconAnchor: [10,10]
+      html: `<div style="width:22px;height:22px;background:#2563EB;border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(37,99,235,0.5)"></div>`,
+      className: '', iconSize: [22,22], iconAnchor: [11,11]
     })
   }).addTo(map);
 
-  // Badge de coordenadas
   const badge = document.getElementById('coords-badge');
   badge.style.display = 'block';
   badge.textContent = '📍 Obteniendo dirección...';
 
-  // Reverse geocode para llenar dirección
   reverseGeocode(lat, lng).then(addr => {
     const shortAddr = addr.split(',').slice(0,3).join(',').trim();
     document.getElementById('f-direccion').value = shortAddr;
     badge.textContent = `📍 ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
   });
 
+  // exitPickMode reabre el panel automáticamente
   exitPickMode();
-  document.getElementById('side-panel').style.opacity = '1';
-  document.getElementById('side-panel').style.pointerEvents = '';
 }
 
 async function submitForm() {
@@ -453,10 +452,12 @@ async function geocodeSearch(q) {
 }
 
 window.addEventListener('load', () => {
-  map = L.map('map', { zoomControl: true, doubleClickZoom: false }).setView([10.49, -66.90], 12);
+  map = L.map('map', { zoomControl: false, doubleClickZoom: false }).setView([10.49, -66.90], 12);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors', maxZoom: 19
   }).addTo(map);
+  // Zoom control abajo a la izquierda, lejos del panel y del header
+  L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
   loadPuntos();
 
