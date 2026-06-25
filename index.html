@@ -79,7 +79,7 @@
     .leaflet-control-zoom a { background: var(--glass-bg) !important; backdrop-filter: var(--glass-blur) !important; -webkit-backdrop-filter: var(--glass-blur) !important; border: none !important; color: var(--text) !important; font-weight: 600 !important; }
     #pick-overlay { position: absolute; inset: 0; z-index: 1500; pointer-events: none; display: none; }
     #pick-overlay.active { display: block; pointer-events: none; }
-    #pick-banner { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); background: rgba(37,99,235,0.88); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); color: #fff; font-size: 14px; font-weight: 500; padding: 12px 22px; border-radius: 28px; white-space: nowrap; box-shadow: 0 4px 20px rgba(37,99,235,0.5); display: flex; align-items: center; gap: 12px; pointer-events: all; border: 1px solid rgba(255,255,255,0.2); }
+    #pick-banner { position: absolute; left: 50%; transform: translateX(-50%); background: rgba(37,99,235,0.88); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); color: #fff; font-size: 14px; font-weight: 500; padding: 12px 22px; border-radius: 28px; white-space: nowrap; box-shadow: 0 4px 20px rgba(37,99,235,0.5); display: flex; align-items: center; gap: 12px; pointer-events: all; border: 1px solid rgba(255,255,255,0.2); }
     #pick-cancel { background: rgba(255,255,255,0.2); border: none; color: #fff; font-size: 13px; font-weight: 500; padding: 5px 14px; border-radius: 14px; cursor: pointer; }
     #btn-locate { position: absolute; top: 14px; left: 14px; width: 40px; height: 40px; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 50%; box-shadow: var(--glass-shadow); cursor: pointer; z-index: 998; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: transform 0.15s; }
     #btn-locate:hover { transform: scale(1.08); }
@@ -483,6 +483,12 @@ function enterPickMode() {
   map.getContainer().classList.add('picking');
   document.getElementById('pick-overlay').classList.add('active');
   document.getElementById('side-panel').classList.remove('open');
+  // Posicionar el banner dentro del área visible del mapa
+  const mapRect = document.getElementById('map-container').getBoundingClientRect();
+  const bannerEl = document.getElementById('banner');
+  const bannerH = bannerEl.style.display === 'none' ? 0 : bannerEl.offsetHeight;
+  const offset = bannerH + 14;
+  document.getElementById('pick-banner').style.top = offset + 'px';
 }
 function exitPickMode() {
   pickMode = false;
