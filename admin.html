@@ -129,7 +129,11 @@
   const { createClient } = supabase;
   const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const cats = { agua:'💧', comida:'🍲', refugio:'🏠', medico:'🏥', medicamentos:'💊', carga:'🔋', mascotas:'🐶', combustible:'⛽' };
+  const cats = {
+    acopio:       '📦', agua:'💧', comida:'🍲', refugio:'🏠',
+    medico:       '🏥', medicamentos:'💊', carga:'🔋',
+    mascotas:     '🐶', combustible:'⛽'
+  };
 
   // AUTH
   document.getElementById('login-btn').addEventListener('click', async () => {
@@ -169,20 +173,22 @@
   });
 
   async function loadAll() {
-    const [{ data: puntos }, { data: subs }] = await Promise.all([
-      db.from('puntos').select('*').order('created_at', { ascending: false }),
-      db.from('submissions').select('*').where ? db.from('submissions').select('*').eq('revisado', false).order('created_at', { ascending: false }) : db.from('submissions').select('*').eq('revisado', false).order('created_at', { ascending: false }),
-    ]);
+    const { data: puntos } = await db.from('puntos').select('*').order('created_at', { ascending: false });
+    const { data: subs }   = await db.from('submissions').select('*').eq('revisado', false).order('created_at', { ascending: false });
 
-    const verified = (puntos || []).filter(p => p.estado === 'verified').length;
-    const pending  = (puntos || []).filter(p => p.estado === 'pending').length;
-    document.getElementById('stat-total').textContent       = (puntos || []).length;
+    const pts = puntos || [];
+    const ss  = subs   || [];
+
+    const verified = pts.filter(p => p.estado === 'verified').length;
+    const pending  = pts.filter(p => p.estado === 'pending').length;
+
+    document.getElementById('stat-total').textContent       = pts.length;
     document.getElementById('stat-verified').textContent    = verified;
     document.getElementById('stat-pending').textContent     = pending;
-    document.getElementById('stat-submissions').textContent = (subs || []).length;
+    document.getElementById('stat-submissions').textContent = ss.length;
 
-    renderSubmissions(subs || []);
-    renderPuntos(puntos || []);
+    renderSubmissions(ss);
+    renderPuntos(pts);
   }
 
   function renderSubmissions(subs) {
@@ -194,11 +200,11 @@
           <div>
             <div class="item-name">${cats[s.categoria] || '📍'} ${s.nombre}</div>
             <div class="item-meta">
-              ${s.direccion ? `📍 ${s.direccion}<br>` : ''}
-              ${s.horario   ? `🕐 ${s.horario}<br>`   : ''}
-              ${s.telefono  ? `📞 ${s.telefono}<br>`  : ''}
-              ${s.descripcion ? `${s.descripcion}<br>` : ''}
-              ${s.reportado_por ? `Reportado por: ${s.reportado_por}<br>` : ''}
+              ${s.direccion    ? `📍 ${s.direccion}<br>`           : ''}
+              ${s.horario      ? `🕐 ${s.horario}<br>`             : ''}
+              ${s.telefono     ? `📞 ${s.telefono}<br>`            : ''}
+              ${s.descripcion  ? `${s.descripcion}<br>`            : ''}
+              ${s.reportado_por? `Reportado por: ${s.reportado_por}<br>` : ''}
               <span style="opacity:0.6">${new Date(s.created_at).toLocaleString('es-VE')}</span>
             </div>
           </div>
@@ -221,14 +227,14 @@
             <span class="badge badge-${p.estado}">${p.estado === 'verified' ? '🟢 Verificado' : p.estado === 'pending' ? '🟡 Por verificar' : '⚪ Antiguo'}</span>
             <div class="item-name">${cats[p.categoria] || '📍'} ${p.nombre}</div>
             <div class="item-meta">
-              ${p.direccion ? `📍 ${p.direccion}<br>` : ''}
-              ${p.horario   ? `🕐 ${p.horario}<br>`   : ''}
-              ${p.descripcion ? `${p.descripcion}` : ''}
+              ${p.direccion   ? `📍 ${p.direccion}<br>` : ''}
+              ${p.horario     ? `🕐 ${p.horario}<br>`   : ''}
+              ${p.descripcion ? `${p.descripcion}`      : ''}
             </div>
           </div>
           <div class="item-actions" style="flex-direction:column">
             ${p.estado !== 'verified' ? `<button class="btn-sm btn-green" onclick="cambiarEstado('${p.id}','verified')">✓ Verificar</button>` : ''}
-            ${p.estado !== 'pending'  ? `<button class="btn-sm btn-amber" onclick="cambiarEstado('${p.id}','pending')">Pendiente</button>` : ''}
+            ${p.estado !== 'pending'  ? `<button class="btn-sm btn-amber" onclick="cambiarEstado('${p.id}','pending')">Pendiente</button>`  : ''}
             <button class="btn-sm btn-red" onclick="eliminarPunto('${p.id}')">✗ Eliminar</button>
           </div>
         </div>
@@ -238,43 +244,36 @@
 
   async function aprobarSubmission(subId, sub) {
     const { error } = await db.from('puntos').insert({
-      nombre:        sub.nombre,
-      categoria:     sub.categoria,
-      lat:           10.49,
-      lng:           -66.90,
-      direccion:     sub.direccion,
-      horario:       sub.horario,
-      telefono:      sub.telefono,
-      descripcion:   sub.descripcion,
-      reportado_por: sub.reportado_por,
-      estado:        'pending',
+      nombre: sub.nombre, categoria: sub.categoria,
+      lat: 10.49, lng: -66.90,
+      direccion: sub.direccion, horario: sub.horario,
+      telefono: sub.telefono, descripcion: sub.descripcion,
+      reportado_por: sub.reportado_por, estado: 'pending',
     });
     if (!error) {
       await db.from('submissions').update({ revisado: true }).eq('id', subId);
-      document.getElementById(`sub-${subId}`)?.remove();
-      const stat = document.getElementById('stat-submissions');
-      stat.textContent = Math.max(0, parseInt(stat.textContent) - 1);
-      alert('✅ Punto agregado como "pendiente de verificar". Actualiza las coordenadas desde la tabla.');
+      alert('✅ Punto agregado. Actualiza las coordenadas desde la tabla de Supabase.');
+      loadAll();
     }
   }
 
   async function rechazarSubmission(subId) {
     if (!confirm('¿Rechazar esta submission?')) return;
     await db.from('submissions').update({ revisado: true }).eq('id', subId);
-    document.getElementById(`sub-${subId}`)?.remove();
-    const stat = document.getElementById('stat-submissions');
-    stat.textContent = Math.max(0, parseInt(stat.textContent) - 1);
+    loadAll();
   }
 
   async function cambiarEstado(id, estado) {
-    await db.from('puntos').update({ estado }).eq('id', id);
+    const { error } = await db.from('puntos').update({ estado }).eq('id', id);
+    if (error) { alert('Error: ' + error.message); return; }
     loadAll();
   }
 
   async function eliminarPunto(id) {
     if (!confirm('¿Eliminar este punto del mapa?')) return;
-    await db.from('puntos').delete().eq('id', id);
-    document.getElementById(`punto-${id}`)?.remove();
+    const { error } = await db.from('puntos').delete().eq('id', id);
+    if (error) { alert('Error: ' + error.message); return; }
+    loadAll();
   }
 </script>
 </body>
