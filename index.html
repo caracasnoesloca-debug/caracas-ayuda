@@ -483,12 +483,7 @@ function enterPickMode() {
   map.getContainer().classList.add('picking');
   document.getElementById('pick-overlay').classList.add('active');
   document.getElementById('side-panel').classList.remove('open');
-  // Posicionar el banner dentro del área visible del mapa
-  const mapRect = document.getElementById('map-container').getBoundingClientRect();
-  const bannerEl = document.getElementById('banner');
-  const bannerH = bannerEl.style.display === 'none' ? 0 : bannerEl.offsetHeight;
-  const offset = bannerH + 14;
-  document.getElementById('pick-banner').style.top = offset + 'px';
+  document.getElementById('pick-banner').style.top = '14px';
 }
 function exitPickMode() {
   pickMode = false;
