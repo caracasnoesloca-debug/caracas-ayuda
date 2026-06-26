@@ -570,7 +570,7 @@ async function geocodeSearch(q) {
   if (!q || q.length < 3) { res.style.display = 'none'; return; }
   const localMatches = allPuntos.filter(p => isPuntoActivo(p) && (p.nombre.toLowerCase().includes(q.toLowerCase()) || (p.direccion||'').toLowerCase().includes(q.toLowerCase()))).slice(0,3).map(p => ({ type:'punto', name:p.nombre, addr:p.direccion||'', lat:p.lat, lng:p.lng, cat:p.categoria }));
   try {
-    const data = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q+' Venezuela')}&limit=4&countrycodes=ve`).then(r => r.json());
+    const data = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=6`).then(r => r.json());
     const geoMatches = data.map(d => ({ type:'geo', name:d.display_name.split(',')[0], addr:d.display_name, lat:parseFloat(d.lat), lng:parseFloat(d.lon) }));
     const all = [...localMatches, ...geoMatches].slice(0,6);
     if (!all.length) { res.style.display = 'none'; return; }
