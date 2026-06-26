@@ -107,9 +107,9 @@
     .list-punto { padding: 11px 14px; border-bottom: 0.5px solid var(--border); }
     .list-punto:last-child { border-bottom: none; }
     .list-punto-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
-    .list-punto-name { font-size: 13px; font-weight: 600; color: var(--blue); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+    .list-punto-name { font-size: 14px; font-weight: 600; color: var(--blue); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
     .list-punto-name:hover { color: var(--blue-dark); }
-    .list-punto-time { font-size: 10px; color: var(--text-muted); white-space: nowrap; margin-left: 6px; flex-shrink: 0; }
+    .list-punto-time { font-size: 12px; color: var(--text-muted); white-space: nowrap; margin-left: 6px; flex-shrink: 0; }
     .list-punto-meta { font-size: 11px; color: var(--text-muted); margin-bottom: 7px; line-height: 1.4; }
     .list-punto-actions { display: flex; gap: 8px; margin-top: 8px; }
     .list-punto-btn { display: inline-flex; align-items: center; gap: 5px; padding: 8px 14px; background: var(--blue); color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; }
@@ -150,7 +150,7 @@
     .status-pending  { background: #fef9c3; color: #854d0e; }
     .status-old      { background: #f3f4f6; color: #6b7280; }
     .popup-row { font-size: 12px; color: #444; margin-bottom: 3px; line-height: 1.4; }
-    .popup-time { font-size: 10px; color: #999; margin-top: 4px; }
+    .popup-time { font-size: 14px; color: #999; margin-top: 4px; }
     .popup-actions { display: flex; gap: 6px; margin-top: 10px; }
     .popup-btn { flex: 1; padding: 7px; font-size: 12px; font-weight: 600; background: #2563EB; color: #fff !important; border: none; border-radius: 8px; cursor: pointer; text-align: center; text-decoration: none !important; display: block; }
     .popup-share-btn { flex: 0 0 auto; padding: 7px 10px; font-size: 14px; background: #f1f5f9; border: none; border-radius: 8px; cursor: pointer; }
@@ -457,7 +457,7 @@ function renderMarkers() {
       ${pt.descripcion? `<div class="popup-row" style="margin-top:5px">${pt.descripcion}</div>` : ''}
       <div class="popup-time">${timeAgo(pt.created_at)} · Visible por ${expiryLabel}</div>
       <div class="popup-actions">
-        <a class="popup-btn" href="https://maps.google.com/?q=${pt.lat},${pt.lng}" target="_blank">🗺️ Cómo llegar</a>
+        <a class="popup-btn" href="https://maps.google.com/?q=${pt.lat},${pt.lng}" target="_blank">Cómo llegar →</a>
         <button class="popup-share-btn" onclick="compartirPunto('${pt.id}','${pt.nombre.replace(/'/g,"\\'")}')">Compartir</button>
       </div>
       <button class="popup-report-btn" onclick="reportarPunto('${pt.id}')">⚠️ Reportar</button>
