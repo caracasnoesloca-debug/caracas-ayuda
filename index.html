@@ -182,6 +182,16 @@
       }
       #list-panel { width: calc(100% - 20px); }
     }
+    /* Clusters con color de marca en vez del verde/amarillo/rojo por defecto */
+    .marker-cluster {
+      background: rgba(37,99,235,0.25) !important;
+    }
+    .marker-cluster div {
+      background: #2563EB !important;
+      color: #fff !important;
+      font-weight: 700;
+      font-family: -apple-system, sans-serif;
+    }
   </style>
 </head>
 <body>
@@ -479,7 +489,8 @@ function renderMarkers() {
 
 async function loadPuntos() {
   try {
-    const { data, error } = await db.from('puntos').select('*').order('created_at', { ascending: false });
+    const hace5dias = new Date(Date.now() - 5*24*60*60*1000).toISOString();
+    const { data, error } = await db.from('puntos').select('*').gte('created_at', hace5dias).order('created_at', { ascending: false });
     if (error) { console.error('Supabase error:', error); }
     else { allPuntos = data || []; }
   } catch(e) { console.error('Fetch error:', e); }
@@ -635,7 +646,7 @@ window.addEventListener('load', () => {
 
   loadPuntos();
   setTimeout(() => { document.getElementById('loading').style.display = 'none'; }, 5000);
-  setInterval(loadPuntos, 30000);
+  setInterval(loadPuntos, 120000);
 
   map.on('click', e => { if (pickMode) setPickedLocation(e.latlng.lat, e.latlng.lng); });
   document.getElementById('btn-pick-map').addEventListener('click', () => { document.getElementById('side-panel').classList.add('open'); enterPickMode(); });
