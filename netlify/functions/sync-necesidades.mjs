@@ -100,38 +100,34 @@ export default async (req) => {
       if (e1) { resumen.push(`${f.prefijo} error leyendo: ${e1.message}`); continue }
       if (!fuente?.length) { resumen.push(`${f.prefijo} 0 reportes`); continue }
 
-      const ids = fuente.map(r => f.prefijo + String(f.mapear(r).id))
-      const { data: existentes, error: e2 } = await destino
-        .from('puntos').select('origen_externo_id').in('origen_externo_id', ids)
-      if (e2) { resumen.push(`${f.prefijo} error destino: ${e2.message}`); continue }
-      const yaImportados = new Set((existentes || []).map(r => r.origen_externo_id))
+      const filas = fuente.map(f.mapear).map(m => ({
+        nombre: m.nombre,
+        categoria: m.categoria,
+        lat: m.lat, lng: m.lng,
+        direccion: m.direccion,
+        telefono: m.telefono,
+        descripcion: m.descripcion,
+        necesitan: m.necesitan,
+        estado: ESTADO_IMPORTADOS,
+        tipo: 'necesidad',
+        reportado_por: m.reportado_por,
+        created_at: m.created_at,
+        origen_externo_id: f.prefijo + String(m.id),
+      }))
 
-      const nuevos = fuente
-        .map(f.mapear)
-        .filter(m => !yaImportados.has(f.prefijo + String(m.id)))
-        .map(m => ({
-          nombre: m.nombre,
-          categoria: m.categoria,
-          lat: m.lat, lng: m.lng,
-          direccion: m.direccion,
-          telefono: m.telefono,
-          descripcion: m.descripcion,
-          necesitan: m.necesitan,
-          estado: ESTADO_IMPORTADOS,
-          tipo: 'necesidad',
-          reportado_por: m.reportado_por,
-          created_at: m.created_at,
-          origen_externo_id: f.prefijo + String(m.id),
-        }))
+      let insertados = 0
+      for (let i = 0; i < filas.length; i += 500) {
+        const lote = filas.slice(i, i + 500)
+        const { data, error: e3 } = await destino
+          .from('puntos')
+          .upsert(lote, { onConflict: 'origen_externo_id', ignoreDuplicates: true })
+          .select('origen_externo_id')
+        if (e3) { resumen.push(`${f.prefijo} error insert: ${e3.message}`); break }
+        insertados += (data?.length || 0)
+      }
 
-      if (!nuevos.length) { resumen.push(`${f.prefijo} sin nuevos`); continue }
-
-      const { error: e3 } = await destino
-        .from('puntos').upsert(nuevos, { onConflict: 'origen_externo_id' })
-      if (e3) { resumen.push(`${f.prefijo} error insert: ${e3.message}`); continue }
-
-      totalImportados += nuevos.length
-      resumen.push(`${f.prefijo} +${nuevos.length}`)
+      totalImportados += insertados
+      resumen.push(`${f.prefijo} +${insertados}`)
     } catch (err) {
       resumen.push(`${f.prefijo} excepcion: ${err.message}`)
     }
