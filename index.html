@@ -33,6 +33,8 @@
   <link rel="dns-prefetch" href="https://nominatim.openstreetmap.org" />
   <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" /></noscript>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -320,6 +322,7 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 const SUPABASE_URL = 'https://zxpfumbsxgnfzxjlhocu.supabase.co';
@@ -428,7 +431,7 @@ function statusBadge(estado) {
 }
 
 function renderMarkers() {
-  markers.forEach(m => map.removeLayer(m));
+  window.clusterGroup.clearLayers();
   markers = [];
   const q = document.getElementById('search-input').value.toLowerCase();
 
@@ -469,7 +472,7 @@ function renderMarkers() {
       </div>
       <button class="popup-report-btn" onclick="reportarPunto('${pt.id}')">⚠️ Reportar</button>
     </div>`, { maxWidth: 280 });
-    m.addTo(map);
+    window.clusterGroup.addLayer(m);
     markers.push(m);
   });
 }
@@ -606,6 +609,14 @@ window.addEventListener('load', () => {
   map = L.map('map', { zoomControl: false, doubleClickZoom: false }).setView([10.49, -66.90], 12);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors', maxZoom: 19 }).addTo(map);
   L.control.zoom({ position: 'bottomleft' }).addTo(map);
+  // ─── CLUSTERING (agrupa marcadores para que el mapa no se trabe) ───
+    window.clusterGroup = L.markerClusterGroup({
+      maxClusterRadius: 50,
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false,
+      chunkedLoading: true
+    });
+    map.addLayer(window.clusterGroup);
 
   // Sticky banner — calcula altura del topbar dinámicamente
   // Altura sticky para banner y panel mobile
