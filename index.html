@@ -182,16 +182,18 @@
       }
       #list-panel { width: calc(100% - 20px); }
     }
-    /* Clusters con color de marca en vez del verde/amarillo/rojo por defecto */
-    .marker-cluster {
-      background: rgba(37,99,235,0.25) !important;
-    }
-    .marker-cluster div {
-      background: #2563EB !important;
-      color: #fff !important;
-      font-weight: 700;
+    /* Clusters separados: azul = ayuda, rojo = necesidad */
+    .cluster-ayuda, .cluster-necesidad { background: transparent; }
+    .cluster-ayuda div, .cluster-necesidad div {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 14px;
       font-family: -apple-system, sans-serif;
+      border: 3px solid rgba(255,255,255,0.8);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
+    .cluster-ayuda div     { background: #2563EB; }
+    .cluster-necesidad div { background: #dc2626; }
   </style>
 </head>
 <body>
@@ -441,7 +443,8 @@ function statusBadge(estado) {
 }
 
 function renderMarkers() {
-  window.clusterGroup.clearLayers();
+  window.clusterAyuda.clearLayers();
+  window.clusterNecesidad.clearLayers();
   markers = [];
   const q = document.getElementById('search-input').value.toLowerCase();
 
@@ -482,7 +485,8 @@ function renderMarkers() {
       </div>
       <button class="popup-report-btn" onclick="reportarPunto('${pt.id}')">⚠️ Reportar</button>
     </div>`, { maxWidth: 280 });
-    window.clusterGroup.addLayer(m);
+    if (pt.tipo === 'necesidad') window.clusterNecesidad.addLayer(m);
+    else window.clusterAyuda.addLayer(m);
     markers.push(m);
   });
 }
@@ -620,14 +624,23 @@ window.addEventListener('load', () => {
   map = L.map('map', { zoomControl: false, doubleClickZoom: false }).setView([10.49, -66.90], 12);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors', maxZoom: 19 }).addTo(map);
   L.control.zoom({ position: 'bottomleft' }).addTo(map);
-  // ─── CLUSTERING (agrupa marcadores para que el mapa no se trabe) ───
-    window.clusterGroup = L.markerClusterGroup({
-      maxClusterRadius: 50,
-      spiderfyOnMaxZoom: true,
-      showCoverageOnHover: false,
-      chunkedLoading: true
-    });
-    map.addLayer(window.clusterGroup);
+  // ─── CLUSTERING separado por tipo (azul = ayuda, rojo = necesidad) ───
+  window.clusterAyuda = L.markerClusterGroup({
+    maxClusterRadius: 50, spiderfyOnMaxZoom: true, showCoverageOnHover: false, chunkedLoading: true,
+    iconCreateFunction: c => L.divIcon({
+      html: `<div><span>${c.getChildCount()}</span></div>`,
+      className: 'cluster-ayuda', iconSize: [40,40]
+    })
+  });
+  window.clusterNecesidad = L.markerClusterGroup({
+    maxClusterRadius: 50, spiderfyOnMaxZoom: true, showCoverageOnHover: false, chunkedLoading: true,
+    iconCreateFunction: c => L.divIcon({
+      html: `<div><span>${c.getChildCount()}</span></div>`,
+      className: 'cluster-necesidad', iconSize: [40,40]
+    })
+  });
+  map.addLayer(window.clusterAyuda);
+  map.addLayer(window.clusterNecesidad);
 
   // Sticky banner — calcula altura del topbar dinámicamente
   // Altura sticky para banner y panel mobile
@@ -723,12 +736,21 @@ window.addEventListener('load', () => {
     );
   });
 
-  // Deep link ?punto=ID
+// Deep link ?punto=ID
   const puntoId = new URLSearchParams(location.search).get('punto');
   if (puntoId) {
     const check = setInterval(() => {
       const pt = allPuntos.find(p => String(p.id) === String(puntoId));
-      if (pt) { clearInterval(check); const m = markers.find(mk => mk._puntoId === pt.id); if (m) { window.clusterGroup.zoomToShowLayer(m, () => m.openPopup()); } else { map.setView([pt.lat, pt.lng], 16); } }
+      if (pt) {
+        clearInterval(check);
+        const m = markers.find(mk => mk._puntoId === pt.id);
+        if (m) {
+          const g = pt.tipo === 'necesidad' ? window.clusterNecesidad : window.clusterAyuda;
+          g.zoomToShowLayer(m, () => m.openPopup());
+        } else {
+          map.setView([pt.lat, pt.lng], 16);
+        }
+      }
     }, 300);
     setTimeout(() => clearInterval(check), 5000);
   }
@@ -786,7 +808,8 @@ function irAlPunto(id) {
   // Centrar mapa y abrir popup
   const m = markers.find(mk => mk._puntoId === String(pt.id) || mk._puntoId === pt.id);
   if (m) {
-    window.clusterGroup.zoomToShowLayer(m, () => m.openPopup());
+    const grupo = pt.tipo === 'necesidad' ? window.clusterNecesidad : window.clusterAyuda;
+    grupo.zoomToShowLayer(m, () => m.openPopup());
   } else {
     map.setView([pt.lat, pt.lng], 16);
   }
