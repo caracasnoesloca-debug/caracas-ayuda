@@ -1,0 +1,8 @@
+{
+  "name": "caracas-ayuda",
+  "version": "1.0.0",
+  "description": "Mapa de recursos de ayuda tras el terremoto en Venezuela",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.48.0"
+  }
+}
