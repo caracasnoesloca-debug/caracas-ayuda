@@ -219,7 +219,7 @@
 
   <div id="banner">
     <div id="banner-text">
-      ℹ️ &nbsp;<strong>¿Necesitas ayuda o sabes dónde están ayudando?</strong> Agrega puntos de ayuda, centros de acopio, refugios, medicamentos y más, o reporta lo que se necesita en tu zona. Los puntos de ayuda se muestran por 72h y los de necesidad por 24h para mantener la información actualizada. Creado sin fines de lucro por <strong>Caracas Merch</strong>.
+      ℹ️ &nbsp;<strong>¿Necesitas ayuda o sabes dónde están ayudando?</strong> Agrega puntos de ayuda, centros de acopio, refugios, medicamentos y más, o reporta lo que se necesita en tu zona. Los puntos se muestran por 5 dias para mantener la información actualizada. Creado sin fines de lucro por <strong>Caracas Merch</strong>.
     </div>
     <button id="banner-close" aria-label="Cerrar">×</button>
   </div>
@@ -454,7 +454,7 @@ function renderMarkers() {
     const tipoBadge = pt.tipo === 'necesidad'
       ? '<span style="display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:500;background:#fee2e2;color:#991b1b;margin-bottom:6px">🔴 Punto de necesidad</span>'
       : '<span style="display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:500;background:#dcfce7;color:#166534;margin-bottom:6px">🟢 Punto de ayuda</span>';
-    const expiryLabel = pt.tipo === 'necesidad' ? '24h' : '72h';
+    const expiryLabel = '5 días';;
     const m = L.marker([pt.lat, pt.lng], { icon: createIcon(pt) });
     m._puntoId = pt.id;
     m.bindPopup(`<div class="popup-card">
@@ -717,7 +717,7 @@ window.addEventListener('load', () => {
   if (puntoId) {
     const check = setInterval(() => {
       const pt = allPuntos.find(p => String(p.id) === String(puntoId));
-      if (pt) { clearInterval(check); map.setView([pt.lat, pt.lng], 16); const m = markers.find(mk => mk._puntoId === pt.id); if (m) m.openPopup(); }
+      if (pt) { clearInterval(check); const m = markers.find(mk => mk._puntoId === pt.id); if (m) { window.clusterGroup.zoomToShowLayer(m, () => m.openPopup()); } else { map.setView([pt.lat, pt.lng], 16); } }
     }, 300);
     setTimeout(() => clearInterval(check), 5000);
   }
@@ -773,9 +773,12 @@ function irAlPunto(id) {
   document.getElementById('list-panel').classList.remove('open');
   document.getElementById('legend').style.display = 'flex';
   // Centrar mapa y abrir popup
-  map.setView([pt.lat, pt.lng], 16);
   const m = markers.find(mk => mk._puntoId === String(pt.id) || mk._puntoId === pt.id);
-  if (m) setTimeout(() => m.openPopup(), 300);
+  if (m) {
+    window.clusterGroup.zoomToShowLayer(m, () => m.openPopup());
+  } else {
+    map.setView([pt.lat, pt.lng], 16);
+  }
 }
 </script>
 </body>
