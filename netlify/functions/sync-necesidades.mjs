@@ -82,6 +82,36 @@ const FUENTES = [
     },
   },
 
+  {
+    activa: true,
+    prefijo: 'rde-ac:',
+    url: 'https://hqoirxajavaaasvdfjoy.supabase.co',
+    key: 'sb_publishable_4qdzpICdtyX6N_XqiVmuYw_Jv_zYvOq',
+    tabla: 'centros_acopio',
+    tipoPunto: 'ayuda',
+    query: (sb) => sb.from('centros_acopio')
+      .select('id,nombre,descripcion,estado,ciudad,direccion,contacto,red_social,lat,lng')
+      .not('lat', 'is', null).not('lng', 'is', null)
+      .limit(2000),
+    mapear: (r) => {
+      const ubic = [r.direccion, r.ciudad, r.estado].filter(Boolean).join(', ')
+      const desc = [r.descripcion, r.red_social ? 'Red social: ' + r.red_social : '']
+        .filter(Boolean).join(' — ')
+      return {
+        id: r.id,
+        nombre: r.nombre || 'Centro de acopio',
+        categoria: 'acopio',
+        lat: r.lat, lng: r.lng,
+        direccion: ubic || null,
+        telefono: r.contacto || null,
+        descripcion: desc || null,
+        necesitan: null,
+        reportado_por: 'Red de Esperanza',
+        created_at: new Date().toISOString(),
+      }
+    },
+  },
+
 ]
 
 export default async (req) => {
@@ -109,7 +139,7 @@ export default async (req) => {
         descripcion: m.descripcion,
         necesitan: m.necesitan,
         estado: ESTADO_IMPORTADOS,
-        tipo: 'necesidad',
+        tipo: f.tipoPunto || 'necesidad',
         reportado_por: m.reportado_por,
         created_at: m.created_at,
         origen_externo_id: f.prefijo + String(m.id),
