@@ -58,6 +58,32 @@
     #banner { padding: 8px 16px; background: rgba(37,99,235,0.08); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-bottom: 1px solid rgba(37,99,235,0.15); display: flex; align-items: flex-start; gap: 8px; flex-shrink: 0; position: sticky; top: var(--topbar-height, 0); z-index: 999; }
     #banner-text { font-size: 13px; color: #1e40af; line-height: 1.5; flex: 1; }
     #banner-text strong { font-weight: 600; }
+    .status-dot {
+      display: inline-block;
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: #16a34a;
+      margin-right: 7px;
+      position: relative;
+      flex-shrink: 0;
+      vertical-align: middle;
+      top: -1px;
+    }
+    .status-dot::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: #16a34a;
+      animation: status-pulse 2s ease-out infinite;
+    }
+    @keyframes status-pulse {
+      0%   { transform: scale(1);   opacity: 0.7; }
+      100% { transform: scale(3.2); opacity: 0;   }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .status-dot::before { animation: none; }
+    }
     #banner-close { background: none; border: none; font-size: 24px; color: #6b8099; cursor: pointer; flex-shrink: 0; line-height: 1; padding: 0; }
     #search-wrap { flex: 1; position: relative; }
     #search-input { width: 100%; padding: 8px 36px 8px 12px; font-size: 16px; border: 1px solid rgba(0,0,0,0.12); border-radius: var(--radius); background: rgba(255,255,255,0.8); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); color: var(--text); outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
@@ -231,7 +257,7 @@
 
   <div id="banner">
     <div id="banner-text">
-      ℹ️ &nbsp;<strong>¿Necesitas ayuda o sabes dónde están ayudando?</strong> Agrega puntos de ayuda, centros de acopio, refugios, medicamentos y más, o reporta lo que se necesita en tu zona. Los puntos se muestran por 5 dias para mantener la información actualizada. Creado sin fines de lucro por <strong>Caracas Merch</strong>.
+     <span class="status-dot"></span><strong>El mapa de la ayuda tras el terremoto.</strong> Marca dónde se está ayudando o reporta lo que falta en tu zona. Cada punto vive 5 días. Sin fines de lucro, por <strong>Caracas Merch</strong>. 
     </div>
     <button id="banner-close" aria-label="Cerrar">×</button>
   </div>
